@@ -1,0 +1,46 @@
+- name: install haproxy required packages
+  apt: pkg=libssl0.9.8
+
+# We can't use the regular Ubuntu packages because they only go up to
+# haproxy 1.4, which does not have SSL support
+- name: download haproxy deb file
+  get_url: url=http://debian.byte-consult.be/haproxy_1.5-dev17_amd64.deb
+           dest=/root/haproxy.deb
+
+- name: install haproxy
+  command: dpkg -i /root/haproxy.deb creates=/usr/sbin/haproxy
+  register: haproxy_bin_changed
+
+- name: stop haproxy after installation
+  service: name=haproxy state=stopped
+  when_boolean: $haproxy_bin_changed
+  ignore_errors: yes
+
+- name: disable naive haproxy init script
+  file: path=/etc/rc2.d/S20haproxy state=absent
+
+- name: create haproxy user
+  user: name=haproxy
+  notify:
+    - restart haproxy
+
+- name: create haproxy user home directory
+  file: path=/home/haproxy state=directory owner=haproxy mode=0400
+  notify:
+    - restart haproxy
+
+- name: set up syslog for haproxy messages
+  copy: src=common/files/haproxy-rsyslog.conf
+        dest=/etc/rsyslog.d/60-haproxy.conf
+  notify:
+    - restart rsyslog
+
+- name: set up rotation for haproxy log files
+  copy: src=common/files/haproxy-logrotate
+        dest=/etc/logrotate.d/haproxy
+
+- name: configure haproxy with supervisor
+  copy: src=common/files/haproxy-supervisor.conf
+        dest=/etc/supervisor/conf.d/haproxy-supervisor.conf
+  notify:
+    - reload supervisor config

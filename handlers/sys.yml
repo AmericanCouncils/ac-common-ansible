@@ -1,0 +1,20 @@
+- name: hard stop supervisor
+  service: name=supervisor state=stopped
+
+- name: hard start supervisor
+  service: name=supervisor state=started
+
+- name: reload supervisor config
+  command: supervisorctl update
+
+- name: restart nginx
+  supervisorctl: name=nginx state=restarted
+
+- name: restart haproxy
+  supervisorctl: name=haproxy state=restarted
+
+- name: restart php5-fpm
+  supervisorctl: name=php5-fpm state=restarted
+
+- name: restart rsyslog
+  service: name=rsyslog state=restarted

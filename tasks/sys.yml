@@ -1,0 +1,26 @@
+- include: common/tasks/set_hostname.yml
+
+- name: update apt cache
+  apt: update_cache=yes
+
+- name: install supervisor
+  apt: pkg=supervisor
+
+- name: install supervisor_twiddler rpc extension
+  pip: name=supervisor_twiddler extra_args="--no-deps"
+  notify:
+    - hard stop supervisor
+    - hard start supervisor
+
+- name: configure supervisor_twiddler
+  copy: src=common/files/twiddler.conf
+        dest=/etc/supervisor/conf.d/twiddler.conf
+  notify:
+    - hard stop supervisor
+    - hard start supervisor
+
+- name: install rsyslog config
+  copy: src=common/files/rsyslog.conf
+        dest=/etc/rsyslog.conf
+  notify:
+    - restart rsyslog

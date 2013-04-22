@@ -1,0 +1,10 @@
+- name: set hostname in /etc/hostname
+  template: src=common/templates/hostname.j2
+            dest=/etc/hostname
+  register: hostname_file
+
+- name: update running hostname
+  command: hostname ${inventory_hostname}
+  when_changed: $hostname_file
+  notify:
+    - restart rsyslog

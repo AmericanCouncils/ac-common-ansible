@@ -1,0 +1,10 @@
+- name: install mongodb
+  apt: pkg=mongodb
+
+# TODO: disable default mongo init script and add to supervisor
+
+- name: configure mongodb with supervisor
+  copy: src=common/files/mongodb-supervisor.conf
+        dest=/etc/supervisor/conf.d/mongodb-supervisor.conf
+  notify:
+    - reload supervisor config

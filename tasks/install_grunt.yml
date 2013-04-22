@@ -1,0 +1,5 @@
+- name: install grunt 0.4.1
+  command: npm install -g grunt@0.4.1 creates=/usr/lib/node_modules/grunt/package.json
+
+- name: install grunt-cli 0.1.6
+  command: npm install -g grunt-cli@0.1.6 creates=/usr/lib/node_modules/grunt-cli/package.json

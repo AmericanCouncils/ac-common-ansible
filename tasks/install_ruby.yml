@@ -1,0 +1,2 @@
+- name: install ruby 1.9.1
+  apt: pkg=ruby1.9.1

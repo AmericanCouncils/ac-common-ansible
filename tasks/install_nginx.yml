@@ -1,0 +1,31 @@
+- name: create /vrthst directory
+  file: path=/vrthst state=directory owner=www-data mode=0755
+
+- name: install nginx
+  apt: pkg=nginx
+  register: nginx_bin_changed
+
+- name: stop nginx after installation
+  service: name=nginx state=stopped
+  when_changed: $nginx_bin_changed
+  ignore_errors: yes
+
+- name: disable naive nginx init script
+  file: path=/etc/rc2.d/S20nginx state=absent
+
+- name: configure nginx with supervisor
+  copy: src=common/files/nginx-supervisor.conf
+        dest=/etc/supervisor/conf.d/nginx-supervisor.conf
+  notify:
+    - reload supervisor config
+
+- name: delete default nginx app
+  file: path=/etc/nginx/sites-enabled/default state=absent
+  notify:
+    - restart nginx
+
+- name: setup central nginx config
+  template: src=common/templates/nginx.conf.j2
+        dest=/etc/nginx/nginx.conf
+  notify:
+    - restart nginx
