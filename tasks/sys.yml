@@ -1,4 +1,4 @@
-- include: common/tasks/set_hostname.yml
+- include: set_hostname.yml
 
 - name: update apt cache
   apt: update_cache=yes
