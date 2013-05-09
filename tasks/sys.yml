@@ -3,6 +3,9 @@
 - name: update apt cache
   apt: update_cache=yes
 
+- name: install git
+  apt: pkg=git
+
 - name: install supervisor
   apt: pkg=supervisor
 
