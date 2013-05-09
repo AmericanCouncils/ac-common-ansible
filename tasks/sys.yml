@@ -9,6 +9,12 @@
 - name: install supervisor
   apt: pkg=supervisor
 
+- name: install pip
+  apt: pkg=python-pip
+
+- name: update pip
+  command: pip install --upgrade pip
+  
 - name: install supervisor_twiddler rpc extension
   pip: name=supervisor_twiddler extra_args="--no-deps"
   notify:

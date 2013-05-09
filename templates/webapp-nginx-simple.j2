@@ -1,6 +1,6 @@
 server {
 	server_name {{ hostname }};
-	root /vrthst/{{ hostname }}/web;
+	root /www/{{ hostname }}/web;
 	error_log /var/log/nginx/{{ hostname }}.error.log;
 	access_log /var/log/nginx/{{ hostname }}.access.log;
 }
