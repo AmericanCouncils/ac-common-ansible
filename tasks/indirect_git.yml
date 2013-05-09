@@ -3,12 +3,17 @@
   local_action: git repo=$repo dest=$ENV(HOME)/.ansible-cache-${name}
                 version=$version
 
+- name: create cache directory
+  file: path=/home/${rsync_user}/.ansible-git-cache/
+        state=directory
+        owner=${rsync_user}
+
 - name: sync repository to target system
   local_action: command rsync -a --no-perms -e ssh
                 $ENV(HOME)/.ansible-cache-${name}/
-                ${rsync_user}@${inventory_hostname}:/home/${rsync_user}/.ansible-cache-${name}
+                ${rsync_user}@${inventory_hostname}:/home/${rsync_user}/.ansible-git-cache/${name}
 
 - name: update deployment target directory
-  git: repo=/home/${rsync_user}/.ansible-cache-${name}
+  git: repo=/home/${rsync_user}/.ansible-git-cache/${name}
        dest=$dest
        version=$version
