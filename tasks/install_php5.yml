@@ -30,6 +30,11 @@
   notify:
     - restart php5-fpm
 
+- name: set up configuration symlink for PHP mongo driver
+  file: src=/etc/php5/mods-available/mongo.ini
+        dest=/etc/php5/conf.d/mongo.ini
+        state=link
+
 - name: install php5-cli
   apt: pkg=php5-cli
 
