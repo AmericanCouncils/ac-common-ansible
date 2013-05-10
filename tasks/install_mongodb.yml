@@ -1,7 +1,14 @@
 - name: install mongodb
   apt: pkg=mongodb
+  register: mongodb_bin_changed
 
-# TODO: disable default mongo init script and add to supervisor
+- name: stop mongodb after installation
+  service: name=mongodb state=stopped
+  when_changed: $mongodb_bin_changed
+  ignore_errors: yes
+
+- name: disable naive mongodb init script
+  file: path=/etc/rc2.d/S20mongodb state=absent
 
 - name: configure mongodb with supervisor
   copy: src=common/files/mongodb-supervisor.conf
