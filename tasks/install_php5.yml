@@ -1,8 +1,20 @@
+# TODO: install new ppa for getting latest php stuff
+
+# TODO: install 5.4
+
 - name: install php5-dev
   apt: pkg=php5-dev
   notify:
     - restart php5-fpm
 
+- name: add php.ini files
+  copy: src=common/files/php.${item}.ini dest=/etc/php5/${item}/php.ini
+  with_items:
+    - cli
+    - fpm
+    - apache2
+  ignore_errors: true # because apache and/or php-fpm may or may not be installed on the target machine
+  
 - name: install PHP xmlrpc module
   apt: pkg=php5-xmlrpc
   notify:
