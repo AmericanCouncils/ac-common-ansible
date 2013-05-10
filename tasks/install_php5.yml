@@ -13,27 +13,8 @@
   notify:
     - restart php5-fpm
 
-- name: install php5-fpm
-  apt: pkg=php5-fpm
-  register: php5_fpm_bin_changed
-
-- name: stop php5-fpm after installation
-  service: name=php5-fpm state=stopped
-  when_changed: $php5_fpm_bin_changed
-  ignore_errors: yes
-
-- name: disable naive php5-fpm init script
-  file: path=/etc/rc2.d/S20php5-fpm state=absent
-
-- name: configure php5-fpm with supervisor
-  copy: src=common/files/php5-fpm-supervisor.conf
-        dest=/etc/supervisor/conf.d/php5-fpm-supervisor.conf
-  notify:
-    - reload supervisor config
-
-- name: setup central php5-fpm config for supervisor-friendly foreground mode
-  copy: src=common/files/php-fpm.conf
-        dest=/etc/php5/fpm/php-fpm.conf
+- name: install PHP mongo driver
+  apt: pkg=php5-mongo
   notify:
     - restart php5-fpm
 
@@ -43,7 +24,3 @@
 - name: install composer
   shell: curl -s http://getcomposer.org/installer | php -- --install-dir=/usr/local/bin
          creates=/usr/local/bin/composer.phar
-
-- name: install php mongo
-  command: pecl install mongo
-  
