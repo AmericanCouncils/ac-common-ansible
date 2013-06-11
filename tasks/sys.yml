@@ -1,5 +1,8 @@
 - include: common/tasks/set_hostname.yml
 
+- name: access modern git repository
+  apt_repository: repo=ppa:git-core/ppa
+
 - name: update apt cache
   apt: update_cache=yes
 
