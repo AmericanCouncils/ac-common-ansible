@@ -1,2 +1,2 @@
 - name: install bower
-  command: npm install -g git://github.com/bower/bower.git#fb41535c6 creates=/usr/bin/bower
+  command: npm install -g bower-canary creates=/usr/bin/bower
