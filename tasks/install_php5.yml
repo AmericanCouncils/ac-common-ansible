@@ -20,6 +20,11 @@
   notify:
     - restart php5-fpm
 
+- name: install APC
+  apt: pkg=php-apc
+  notify:
+    - restart php5-fpm
+
 - name: install PHP mysql driver
   apt: pkg=php5-mysql
   notify:
