@@ -35,6 +35,11 @@
   notify:
     - restart php5-fpm
 
+- name: install PHP curl library
+  apt: pkg=php5-curl
+  notify:
+    - restart php5-curl
+
 - name: set up configuration symlink for PHP mongo driver
   file: src=/etc/php5/mods-available/mongo.ini
         dest=/etc/php5/conf.d/mongo.ini
