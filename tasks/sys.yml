@@ -3,6 +3,11 @@
 - name: access modern git repository
   apt_repository: repo=ppa:git-core/ppa
 
+- name: add github ssh host key
+  copy: src=common/files/ssh_known_hosts
+        dest=/etc/ssh/ssh_known_hosts
+        mode=0444
+
 - name: update apt cache
   apt: update_cache=yes
 
