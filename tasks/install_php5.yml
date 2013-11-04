@@ -38,7 +38,12 @@
 - name: install PHP curl library
   apt: pkg=php5-curl
   notify:
-    - restart php5-curl
+    - restart php5-fpm
+
+- name: install PHP internationalization library
+  apt: pkg=php5-intl
+  notify:
+    - restart php5-fpm
 
 - name: set up configuration symlink for PHP mongo driver
   file: src=/etc/php5/mods-available/mongo.ini
