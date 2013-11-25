@@ -4,7 +4,7 @@
 
 - name: update apt cache for nodejs repo
   apt: update_cache=yes
-  when_changed: $nodejs_repo
+  when: nodejs_repo.changed
 
 - name: install nodejs
   apt: pkg=nodejs

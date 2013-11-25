@@ -1,10 +1,10 @@
 - name: install mongodb
   apt: pkg=mongodb
-  register: mongodb_bin_changed
+  register: mongodb_bin
 
 - name: stop mongodb after installation
   service: name=mongodb state=stopped
-  when_changed: $mongodb_bin_changed
+  when: mongodb_bin.changed
   ignore_errors: yes
 
 - name: disable naive mongodb init script

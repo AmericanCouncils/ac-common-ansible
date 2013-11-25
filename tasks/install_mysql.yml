@@ -1,10 +1,10 @@
 - name: install mysql
   apt: pkg=mysql-server
-  register: mysql_bin_changed
+  register: mysql_bin
 
 - name: stop mysql after installation
   service: name=mysql state=stopped
-  when_changed: $mysql_bin_changed
+  when: mysql_bin.changed
   ignore_errors: yes
 
 - name: disable naive mysql init script

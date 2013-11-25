@@ -1,10 +1,10 @@
 - name: install nginx
   apt: pkg=nginx
-  register: nginx_bin_changed
+  register: nginx_bin
 
 - name: stop nginx after installation
   service: name=nginx state=stopped
-  when_changed: $nginx_bin_changed
+  when: nginx_bin.changed
   ignore_errors: yes
 
 - name: disable naive nginx init script

@@ -1,10 +1,10 @@
 - name: install rabbitmq-server
   apt: pkg=rabbitmq-server
-  register: rabbitmq_server_bin_changed
+  register: rabbitmq_server_bin
 
 - name: stop rabbitmq-server after installation
   service: name=rabbitmq-server state=stopped
-  when_changed: $rabbitmq_server_bin_changed
+  when: rabbitmq_server_bin.changed
   ignore_errors: yes
 
 - name: disable naive rabbitmq-server init script

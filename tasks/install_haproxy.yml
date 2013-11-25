@@ -9,11 +9,11 @@
 
 - name: install haproxy
   command: dpkg -i /root/haproxy.deb creates=/usr/sbin/haproxy
-  register: haproxy_bin_changed
+  register: haproxy_bin
 
 - name: stop haproxy after installation
   service: name=haproxy state=stopped
-  when_boolean: $haproxy_bin_changed
+  when: haproxy_bin.changed
   ignore_errors: yes
 
 - name: disable naive haproxy init script

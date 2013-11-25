@@ -1,4 +1,7 @@
-- include: common/tasks/set_hostname.yml
+- include: set_hostname.yml
+
+- name: install pycurl
+  apt: pkg=python-pycurl
 
 - name: access modern git repository
   apt_repository: repo=ppa:git-core/ppa
@@ -22,7 +25,7 @@
 
 - name: update pip
   command: pip install --upgrade pip
-  
+
 - name: install supervisor_twiddler rpc extension
   pip: name=supervisor_twiddler extra_args="--no-deps"
   notify:

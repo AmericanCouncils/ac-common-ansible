@@ -1,10 +1,10 @@
 - name: install php5-fpm
   apt: pkg=php5-fpm
-  register: php5_fpm_bin_changed
+  register: php5_fpm_bin
 
 - name: stop php5-fpm after installation
   service: name=php5-fpm state=stopped
-  when_changed: $php5_fpm_bin_changed
+  when: php5_fpm_bin.changed
   ignore_errors: yes
 
 - name: disable naive php5-fpm init script

@@ -5,6 +5,6 @@
 
 - name: update running hostname
   command: hostname ${inventory_hostname}
-  when_changed: $hostname_file
+  when: hostname_file.changed
   notify:
     - restart rsyslog
