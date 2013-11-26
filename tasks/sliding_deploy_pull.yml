@@ -10,15 +10,24 @@
         owner="{{user}}"
         group="{{user}}"
 
-- name: sliding_deploy_pull {{name}} - set deployment directory path fact
-  set_fact:
-    deploy_dir: "{{app_dir}}/deployments/{{name}}/d-{{ansible_date_time.iso8601}}-{{version}}"
+- name: sliding_deploy_pull {{name}} - delete old temporary repo directory
+  file: path="{{app_dir}}/deployments/{{name}}/temp"
+        state=absent
 
 - name: sliding_deploy_pull {{name}} - clone repository
   git: repo="{{git_url}}"
-       dest="{{deploy_dir}}"
+       dest="{{app_dir}}/deployments/{{name}}/temp"
        version="{{version}}"
        depth=1
+  register: git_clone
+
+- name: sliding_deploy_pull {{name}} - setup deployment name
+  set_fact:
+    deploy_dir: "{{app_dir}}/deployments/{{name}}/d-{{ansible_date_time.iso8601}}-{{version}}-{{git_clone.after}}"
+
+- name: sliding_deploy_pull {{name}} - rename repository to correct deployment name
+  command: mv "{{app_dir}}/deployments/{{name}}/temp" "{{deploy_dir}}"
+           removes="{{app_dir}}/deployments/{{name}}/temp"
 
 - name: sliding_deploy_pull {{name}} - set ownership of the repository
   file: path="{{deploy_dir}}"
