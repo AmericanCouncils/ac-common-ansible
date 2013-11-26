@@ -1,5 +1,11 @@
 - include: set_hostname.yml
 
+- name: allow ssh key forwarding through sudo
+  lineinfile: dest=/etc/sudoers
+              line="Defaults env_keep+=SSH_AUTH_SOCK"
+              regexp="Defaults env_keep\\+=SSH_AUTH_SOCK"
+              insertafter="^Defaults"
+
 - name: install pycurl
   apt: pkg=python-pycurl
 
