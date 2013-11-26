@@ -1,0 +1,43 @@
+- include: sliding_deploy_pull.yml
+  vars:
+    # Passing through: name, user, git_url, version
+    shared_dirs: []
+    copied_dirs: [ "bower_components", "node_modules" ]
+
+- name: sliding_deploy_angular {{name}} - copy settings.coffee to scripts folder
+  copy: src="files/{{settings_file}}"
+        dest="{{app_dir}}/deployments/{{name}}/setup/app/scripts/settings.coffee"
+
+- name: sliding_deploy_angular {{name}} - install npm dependencies
+  command: npm install
+           chdir="{{app_dir}}/deployments/{{name}}/setup"
+
+- name: sliding_deploy_angular {{name}} - install bower dependencies
+  command: bower install --dev
+           chdir="{{app_dir}}/deployments/{{name}}/setup"
+
+# NOTE: Tasks below use the 'removes' tag to avoid running the command unless
+# the item exists; it does not actually remove anything.
+
+- name: sliding_deploy_angular {{name}} - install npm dependencies for nested angular-ui-bootstrap
+  command: npm install
+           chdir="{{app_dir}}/deployments/{{name}}/setup/bower_components/angular-ui-bootstrap"
+           removes="{{app_dir}}/deployments/{{name}}/setup/bower_components/angular-ui-bootstrap"
+
+- name: sliding_deploy_angular {{name}} - workaround bug in nested angular-ui-bootstrap build script
+  command: grunt html2js
+           chdir="{{app_dir}}/deployments/{{name}}/setup/bower_components/angular-ui-bootstrap"
+           removes="{{app_dir}}/deployments/{{name}}/setup/bower_components/angular-ui-bootstrap"
+
+- name: sliding_deploy_angular {{name}} - build nested angular-ui-bootstrap
+  command: grunt build
+           chdir="{{app_dir}}/deployments/{{name}}/setup/bower_components/angular-ui-bootstrap"
+           removes="{{app_dir}}/deployments/{{name}}/setup/bower_components/angular-ui-bootstrap"
+
+- name: sliding_deploy_angular {{name}} - build dist
+  command: grunt build
+           chdir="{{app_dir}}/deployments/{{name}}/setup"
+
+# TODO: Run some kind of setup script provided by the app, if it's present
+
+- include: sliding_deploy_apply.yml
