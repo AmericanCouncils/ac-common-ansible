@@ -23,4 +23,6 @@
         dest="{{app_dir}}/{{name}}"
         state=link
 
-# TODO: Remove old deployments
+# Shell command from http://www.tequilafish.com/2011/06/26/unix-delete-all-but-n-most-recent-files-in-a-directory/
+- name: sliding_deploy_apply {{name}} - delete old deployments
+  shell: find {{app_dir}}/deployments/{{name}}/ -maxdepth 1 -type d -name 'd-*' -print0 | xargs -r0 ls -dr | tail -n +6 | tr '\n' '\0' | xargs -r0 rm -rf
