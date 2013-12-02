@@ -1,5 +1,14 @@
 - include: set_hostname.yml
 
+- name: set shell prompt to show full hostname
+  lineinfile: dest={{item}}
+              regexp="^export PS1="
+              line="export PS1='\u@\H:\w\$ '"
+  with_items:
+    - /etc/skel/.bashrc
+    - /home/control/.bashrc
+    - /root/.bashrc
+
 - name: allow ssh key forwarding through sudo
   lineinfile: dest=/etc/sudoers
               line="Defaults env_keep+=SSH_AUTH_SOCK"
