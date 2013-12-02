@@ -12,6 +12,14 @@
   command: /usr/local/bin/composer.phar install
            chdir="{{app_dir}}/deployments/{{name}}/setup"
 
+- name: sliding_deploy_symfony {{name}} - clear production app cache
+  command: php app/console cache:clear --env=prod
+           chdir="{{app_dir}}/deployments/{{name}}/setup"
+
+- name: sliding_deploy_symfony {{name}} - clear dev app cache
+  command: php app/console cache:clear --env=dev
+           chdir="{{app_dir}}/deployments/{{name}}/setup"
+
 # TODO: Run some kind of setup script provided by the app, if it's present
 
 - include: sliding_deploy_apply.yml
