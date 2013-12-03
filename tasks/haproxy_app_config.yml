@@ -1,0 +1,16 @@
+- include: install_haproxy.yml
+
+- name: setup ssl cert
+  copy: src=../../files/secure/{{pemfile}}
+        dest=/etc/ssl/private/{{pemfile}}
+        mode=0400
+  notify:
+    - restart haproxy
+
+- name: haproxy config
+  template: src=../../templates/{{template}}
+            dest=/etc/haproxy/haproxy.cfg
+  tags: haproxy_conf
+  notify:
+    - restart haproxy
+
