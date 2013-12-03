@@ -1,0 +1,20 @@
+- include: install_nodejs.yml
+
+- include: install_grunt.yml
+
+- include: install_bower.yml
+
+- include: install_ruby.yml
+
+- include: install_mysql.yml
+
+- name: install haml gem
+  gem: name=haml state=present
+
+- name: install sass gem
+  gem: name=sass state=present
+
+# TODO: Add support for prerelease gems to ansible gem module
+- name: install sass-css-importer gem, prerelease version
+  command: gem install sass-css-importer --pre
+

@@ -1,0 +1,13 @@
+- name: symfony_app_user {{user}} - create app user
+  user: name={{user}} groups=www-data shell=/bin/bash
+
+- name: symfony_app_user {{user}} - add www-data user to app user group
+  user: name=www-data groups=www-data,{{user}}
+
+- name: symfony_app_user {{user}} - set php-fpm to run as app user
+  template: src=../templates/php-fpm-pool-www.conf.j2
+            dest=/etc/php5/fpm/pool.d/www.conf
+  notify:
+    - restart php5-fpm
+
+
