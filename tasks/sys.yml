@@ -1,13 +1,24 @@
 - include: set_hostname.yml
 
-- name: set shell prompt to show full hostname
+- name: set shell prompt to show full hostname with production tag
   lineinfile: dest={{item}}
               regexp="^export PS1="
-              line="export PS1='\u@\H:\w\$ '"
+              line='export PS1="\[\033[1;31m\][PROD]\[\033[0m\] \u@\H:\w\$ "'
   with_items:
     - /etc/skel/.bashrc
     - /home/control/.bashrc
     - /root/.bashrc
+  when: "{{production}}"
+
+- name: set shell prompt to show full hostname without production tag
+  lineinfile: dest={{item}}
+              regexp="^export PS1="
+              line='export PS1="\u@\H:\w\$ "'
+  with_items:
+    - /etc/skel/.bashrc
+    - /home/control/.bashrc
+    - /root/.bashrc
+  when: "not {{production}}"
 
 - name: allow ssh key forwarding through sudo
   lineinfile: dest=/etc/sudoers
