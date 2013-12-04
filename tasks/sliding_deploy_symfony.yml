@@ -1,7 +1,6 @@
 - include: sliding_deploy_pull.yml
   vars:
-    # Passing through: name, user, git_url, version
-    shared_dirs: [ "web/uploads" ]
+    # Passing through: name, user, git_url, version, shared_dirs
     copied_dirs: [ "vendor" ]
 
 - name: sliding_deploy_symfony {{name}} - copy parameters.yml to config folder
