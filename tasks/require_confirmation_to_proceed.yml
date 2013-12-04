@@ -1,3 +1,3 @@
-- name: Verify that user really wants to proceed
+- name: cancel process if user did not confirm
   fail: msg="USER CANCELLED, ABORTING..."
   when: "'{{confirmation}}' != 'yes'"

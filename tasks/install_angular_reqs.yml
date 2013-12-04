@@ -6,8 +6,6 @@
 
 - include: install_ruby.yml
 
-- include: install_mysql.yml
-
 - name: install haml gem
   gem: name=haml state=present
 

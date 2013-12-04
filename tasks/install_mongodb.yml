@@ -1,17 +1,7 @@
 - name: install mongodb
   apt: pkg=mongodb
-  register: mongodb_bin
 
-- name: stop mongodb after installation
-  service: name=mongodb state=stopped
-  when: mongodb_bin.changed
-  ignore_errors: yes
-
-- name: disable naive mongodb init script
-  file: path=/etc/rc2.d/S20mongodb state=absent
-
-- name: configure mongodb with supervisor
-  copy: src=common/files/mongodb-supervisor.conf
-        dest=/etc/supervisor/conf.d/mongodb-supervisor.conf
-  notify:
-    - reload supervisor config
+- include: supervisorify.yml
+  vars:
+    service: mongodb
+    command: /usr/bin/mongod --config /etc/mongodb.conf

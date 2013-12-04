@@ -3,7 +3,7 @@
 # that's as easy to configure
 
 - name: copy ffmpeg install script
-  copy: src=common/files/install_ffmpeg.sh
+  copy: src=../files/install_ffmpeg.sh
         dest=/home/control/install_ffmpeg.sh
 
 - name: install ffmpeg

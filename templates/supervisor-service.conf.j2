@@ -1,0 +1,8 @@
+[program:{{service}}]
+command={{command}}
+autorestart=true
+redirect_stderr=true
+startsecs={{start_secs|default('2')}}
+{%if environment %}
+environment={{environment}}
+{%endif%}

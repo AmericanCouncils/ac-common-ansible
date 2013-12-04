@@ -1,5 +1,5 @@
 - name: set hostname in /etc/hostname
-  template: src=common/templates/hostname.j2
+  template: src=../templates/hostname.j2
             dest=/etc/hostname
   register: hostname_file
 

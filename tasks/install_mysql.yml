@@ -1,17 +1,8 @@
 - name: install mysql
   apt: pkg=mysql-server
-  register: mysql_bin
 
-- name: stop mysql after installation
-  service: name=mysql state=stopped
-  when: mysql_bin.changed
-  ignore_errors: yes
-
-- name: disable naive mysql init script
-  file: path=/etc/rc2.d/S20mysql state=absent
-
-- name: configure mysql with supervisor
-  copy: src=common/files/mysql-supervisor.conf
-        dest=/etc/supervisor/conf.d/mysql-supervisor.conf
-  notify:
-    - reload supervisor config
+- include: supervisorify.yml
+  vars:
+    service: mysql
+    command: /usr/sbin/mysqld
+    procname: mysqld

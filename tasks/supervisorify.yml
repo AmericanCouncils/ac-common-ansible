@@ -1,0 +1,32 @@
+- name: supervisorify {{service}} - remove init.d rc startup links
+  service: name={{service}} enabled=no
+
+- name: supervisorify {{service}} - create supervisor service config file
+  template: src=../templates/supervisor-service.conf.j2
+            dest=/etc/supervisor/conf.d/{{service}}-supervisor.conf
+  notify:
+    - hard restart supervisor
+    - restart {{service}}
+
+- name: supervisorify {{service}} - install supervisor init script wrapper
+  copy: src=../files/init-supervisor-wrapper
+        dest=/sbin/init-supervisor-wrapper
+        mode=555
+
+- name: supervisorify {{service}} - remove upstart config for service
+  file: path=/etc/init/{{service}}.conf
+        state=absent
+  register: upstart_config
+
+- name: supervisorify {{service}} - link old-style init script to wrapper
+  file: src=/sbin/init-supervisor-wrapper
+        dest=/etc/init.d/{{service}}
+        state=link
+        force=yes
+  register: init_script
+
+- name: supervisorify {{service}} - kill old service process
+  shell: killall -9 {{procname|default(service)}} || echo "Nothing to kill"
+  when: upstart_config.changed or init_script.changed
+  notify:
+    - restart {{service}}

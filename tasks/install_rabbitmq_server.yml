@@ -1,17 +1,8 @@
 - name: install rabbitmq-server
   apt: pkg=rabbitmq-server
-  register: rabbitmq_server_bin
 
-- name: stop rabbitmq-server after installation
-  service: name=rabbitmq-server state=stopped
-  when: rabbitmq_server_bin.changed
-  ignore_errors: yes
-
-- name: disable naive rabbitmq-server init script
-  file: path=/etc/rc2.d/S20rabbitmq-server state=absent
-
-- name: configure rabbitmq-server with supervisor
-  copy: src=common/files/rabbitmq-supervisor.conf
-        dest=/etc/supervisor/conf.d/rabbitmq-supervisor.conf
-  notify:
-    - reload supervisor config
+- include: supervisorify.yml
+  vars:
+    service: rabbitmq-server
+    command: /usr/lib/rabbitmq/bin/rabbitmq-server
+    environment: HOME=/tmp
