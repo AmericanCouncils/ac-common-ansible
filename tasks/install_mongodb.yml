@@ -5,3 +5,4 @@
   vars:
     service: mongodb
     command: /usr/bin/mongod --config /etc/mongodb.conf
+    procname: mongod
