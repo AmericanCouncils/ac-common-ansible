@@ -1,0 +1,7 @@
+- hosts: all
+  connection: local
+  gather_facts: false
+  vars_prompt:
+    confirmation: "You are targetting PRODUCTION! Type 'yes' to proceed"
+  tasks:
+    - include: tasks/require_confirmation_to_proceed.yml
