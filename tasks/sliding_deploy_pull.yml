@@ -23,7 +23,7 @@
 
 - name: sliding_deploy_pull {{name}} - setup deployment name
   set_fact:
-    deploy_dir: "{{app_dir}}/deployments/{{name}}/d-{{ansible_date_time.iso8601}}-{{version}}-{{git_clone.after}}"
+    deploy_dir: "{{app_dir}}/deployments/{{name}}/d-{{ansible_date_time.iso8601 | replace(':','.')}}-{{version}}-{{git_clone.after}}"
 
 - name: sliding_deploy_pull {{name}} - rename repository to correct deployment name
   command: mv "{{app_dir}}/deployments/{{name}}/temp" "{{deploy_dir}}"
