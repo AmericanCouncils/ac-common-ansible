@@ -1,7 +1,9 @@
 # custom install script for ffmpeg for use on travis
 
+# TODO: Clear ffmpeg_sources and ffmpeg_build if they already exist
+# TODO: Use /usr/local/bin as bindir, don't install to $HOME/bin and move after
+
 ## dependencies
-sudo apt-get update
 sudo apt-get -y install autoconf automake build-essential git libass-dev libgpac-dev \
   libsdl1.2-dev libtheora-dev libtool libva-dev libvdpau-dev libvorbis-dev libx11-dev \
   libxext-dev libxfixes-dev pkg-config texi2html zlib1g-dev
@@ -84,3 +86,5 @@ make distclean
 hash -r
 
 sudo mv $HOME/bin/ffmpeg /usr/local/bin/ffmpeg
+
+# TODO: Delete ffmpeg_sources and ffmpeg_build after we're done

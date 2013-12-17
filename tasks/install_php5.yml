@@ -54,7 +54,7 @@
   apt: pkg=php5-fpm
 
 - name: setup central php5-fpm config for supervisor-friendly foreground mode
-  copy: src=common/files/php-fpm.conf
+  copy: src=../files/php-fpm.conf
         dest=/etc/php5/fpm/php-fpm.conf
   notify:
     - restart php5-fpm

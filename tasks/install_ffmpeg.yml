@@ -4,7 +4,7 @@
 
 - name: copy ffmpeg install script
   copy: src=../files/install_ffmpeg.sh
-        dest=/home/control/install_ffmpeg.sh
+        dest=/tmp/install_ffmpeg.sh
 
 - name: install ffmpeg
-  command: /usr/local/control/install_ffmpeg.sh creates=/usr/local/bin/ffmpeg
+  command: /tmp/install_ffmpeg.sh creates=/usr/local/bin/ffmpeg
