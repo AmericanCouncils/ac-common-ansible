@@ -5,4 +5,4 @@
   vars:
     service: rabbitmq-server
     command: /usr/lib/rabbitmq/bin/rabbitmq-server
-    environment: HOME=/tmp
+    daemon_environment: HOME=/tmp

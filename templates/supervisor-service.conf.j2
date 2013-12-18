@@ -3,6 +3,9 @@ command={{command}}
 autorestart=true
 redirect_stderr=true
 startsecs={{start_secs|default('2')}}
-{%if environment %}
-environment={{environment}}
-{%endif%}
+{% if daemon_environment is defined %}
+environment={{daemon_environment}}
+{% endif %}
+{% if chdir is defined %}
+directory={{chdir}}
+{% endif %}

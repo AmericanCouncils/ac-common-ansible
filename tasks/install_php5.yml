@@ -1,73 +1,24 @@
-- name: install php5-dev
-  apt: pkg=php5-dev
-  notify:
-    - restart php5-fpm
-
-- name: install PHP xmlrpc module
-  apt: pkg=php5-xmlrpc
-  notify:
-    - restart php5-fpm
-
-- name: install APC
-  apt: pkg=php-apc
-  notify:
-    - restart php5-fpm
-
-- name: install PHP mysql driver
-  apt: pkg=php5-mysql
-  notify:
-    - restart php5-fpm
-
-- name: install PHP mongo driver
-  apt: pkg=php5-mongo
-  notify:
-    - restart php5-fpm
-
-- name: install PHP curl library
-  apt: pkg=php5-curl
-  notify:
-    - restart php5-fpm
-
-- name: install PHP internationalization library
-  apt: pkg=php5-intl
-  notify:
-    - restart php5-fpm
-
-- name: install PHP gmp library
-  apt: pkg=php5-gmp
-  notify:
-    - restart php5-fpm
+- name: install PHP 5 packages
+  apt: pkg={{item}}
+  with_items:
+    - php5-dev
+    - php5-cli
+    - php5-xmlrpc
+    - php-apc
+    - php5-mysql
+    - php5-mongo
+    - php5-curl
+    - php5-intl
+    - php5-gmp
 
 - name: set up configuration symlink for PHP mongo driver
   file: src=/etc/php5/mods-available/mongo.ini
         dest=/etc/php5/conf.d/mongo.ini
         state=link
 
-- name: install php5-cli
-  apt: pkg=php5-cli
-
 - name: install composer
   shell: curl -s http://getcomposer.org/installer | php -- --install-dir=/usr/local/bin
          creates=/usr/local/bin/composer.phar
 
-- name: install php5-fpm
-  apt: pkg=php5-fpm
-
-- name: setup central php5-fpm config for supervisor-friendly foreground mode
-  copy: src=../files/php-fpm.conf
-        dest=/etc/php5/fpm/php-fpm.conf
-  notify:
-    - restart php5-fpm
-
-- name: update php.ini
-  copy: src=../files/php.ini dest=/etc/php5/${item}/php.ini
-  with_items:
-    - cli
-    - fpm
-  notify:
-    - restart php5-fpm
-
-- include: supervisorify.yml
-  vars:
-    service: php5-fpm
-    command: /usr/sbin/php5-fpm
+- name: update php.ini for php5-cli
+  copy: src=../files/php.ini dest=/etc/php5/cli/php.ini

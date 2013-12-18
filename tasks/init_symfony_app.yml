@@ -1,0 +1,5 @@
+- name: init_symfony_app - update composer dependencies
+  command: /usr/local/bin/composer.phar install
+           chdir="{{dir}}"
+
+# TODO: Run some kind of setup script provided by the app, if it's present

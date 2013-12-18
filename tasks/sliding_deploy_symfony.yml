@@ -1,24 +1,22 @@
 - include: sliding_deploy_pull.yml
   vars:
-    # Passing through: name, user, git_url, version, shared_dirs
+    # Passing through: app_dir, name, user, git_url, version, shared_dirs
     copied_dirs: [ "vendor" ]
 
 - name: sliding_deploy_symfony {{name}} - copy parameters.yml to config folder
   copy: src="files/secure/{{params_file}}"
         dest="{{app_dir}}/deployments/{{name}}/setup/app/config/parameters.yml"
 
-- name: sliding_deploy_symfony {{name}} - update composer dependencies
-  command: /usr/local/bin/composer.phar install
-           chdir="{{app_dir}}/deployments/{{name}}/setup"
+- include: init_symfony_app.yml
+  vars:
+    dir: "{{app_dir}}/deployments/{{name}}/setup"
 
-- name: sliding_deploy_symfony {{name}} - clear production app cache
-  command: php app/console cache:clear --env=prod
+- name: sliding_symfony_deploy {{name}} - clear caches
+  command: php app/console cache:clear --env={{item}}
            chdir="{{app_dir}}/deployments/{{name}}/setup"
-
-- name: sliding_deploy_symfony {{name}} - clear dev app cache
-  command: php app/console cache:clear --env=dev
-           chdir="{{app_dir}}/deployments/{{name}}/setup"
-
-# TODO: Run some kind of setup script provided by the app, if it's present
+  with_items:
+    - prod
+    - dev
 
 - include: sliding_deploy_apply.yml
+  # Passing through vars: app_dir, name
