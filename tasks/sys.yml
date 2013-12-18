@@ -46,6 +46,8 @@
 
 - name: update pip
   command: pip install --upgrade pip
+  register: pip_update_result
+  changed_when: "'already up-to-date' not in pip_update_result.stdout"
 
 - name: install supervisor
   apt: pkg=supervisor
