@@ -6,3 +6,4 @@
     service: "{{name}}"
     command: "/usr/bin/php5 ./app/console server:run -vv {{ansible_eth1.ipv4.address}}:80"
     chdir: "{{dir}}"
+    stop_as_group: true

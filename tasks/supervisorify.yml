@@ -10,7 +10,7 @@
 
 - name: supervisorify {{service}} - create supervisor service config file
   template: src=../templates/supervisor-service.conf.j2
-            dest=/etc/supervisor/conf.d/{{service}}-supervisor.conf
+            dest=/etc/supervisor.d/{{service}}-supervisor.conf
   notify:
     - hard restart supervisor
     - restart {{service}}

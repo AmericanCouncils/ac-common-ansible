@@ -6,15 +6,15 @@ SERVICE=$(basename $0)
 case "$1" in
   start)
     echo "Running: supervisorctl start $SERVICE"
-    /usr/bin/supervisorctl start $SERVICE
+    /usr/local/bin/supervisorctl start $SERVICE
     ;;
   stop)
     echo "Running: supervisorctl stop $SERVICE"
-    /usr/bin/supervisorctl stop $SERVICE
+    /usr/local/bin/supervisorctl stop $SERVICE
     ;;
   restart|force-reload)
     echo "Running: supervisorctl restart $SERVICE"
-    /usr/bin/supervisorctl restart $SERVICE
+    /usr/local/bin/supervisorctl restart $SERVICE
     ;;
   *)
     echo "Usage: $SCRIPTNAME {start|stop|restart|force-reload}" >@2

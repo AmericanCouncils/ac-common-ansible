@@ -49,8 +49,43 @@
   register: pip_update_result
   changed_when: "'already up-to-date' not in pip_update_result.stdout"
 
+# TODO: Remove these after all our machines no longer have this old package
+- name: uninstall supervisor apt package
+  apt: pkg=supervisor state=absent
+- name: delete old supervisor conf directory
+  file: path=/etc/supervisor/ state=absent
+
 - name: install supervisor
-  apt: pkg=supervisor
+  pip: name=supervisor
+  notify:
+    - hard restart supervisor
+
+- name: create supervisor config directory
+  file: path=/etc/supervisor.d state=directory
+  notify:
+    - hard restart supervisor
+
+- name: create supervisor log directories
+  file: path=/var/log/supervisor/ state=directory
+  notify:
+    - hard restart supervisor
+
+- name: create upstart configuration for supervisor
+  copy: src=../files/supervisor-upstart.conf
+        dest=/etc/init/supervisor.conf
+  notify:
+    - hard restart supervisor
+
+- name: link init.d/supervisor to upstart-job
+  file: src=/lib/init/upstart-job
+        dest=/etc/init.d/supervisor
+        state=link
+
+- name: install supervisor config file
+  copy: src=../files/supervisord.conf
+        dest=/etc/supervisord.conf
+  notify:
+    - hard restart supervisor
 
 - name: install supervisor_twiddler rpc extension
   pip: name=supervisor_twiddler extra_args="--no-deps"
@@ -59,7 +94,7 @@
 
 - name: configure supervisor_twiddler
   copy: src=../files/twiddler.conf
-        dest=/etc/supervisor/conf.d/twiddler.conf
+        dest=/etc/supervisor.d/twiddler.conf
   notify:
     - hard restart supervisor
 

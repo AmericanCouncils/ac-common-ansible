@@ -4,5 +4,5 @@
 - include: supervisorify.yml
   vars:
     service: mongodb
-    command: /usr/bin/mongod --config /etc/mongodb.conf
+    command: "/usr/bin/mongod --config /etc/mongodb.conf {{ '--smallfiles' if small_files is defined else ''}}"
     procname: mongod

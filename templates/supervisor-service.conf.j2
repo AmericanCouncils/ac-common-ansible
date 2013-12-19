@@ -9,3 +9,9 @@ environment={{daemon_environment}}
 {% if chdir is defined %}
 directory={{chdir}}
 {% endif %}
+{% if stop_as_group is defined and stop_as_group %}
+stopasgroup=true
+{% endif %}
+{% if daemon_user is defined %}
+user={{daemon_user}}
+{% endif %}
