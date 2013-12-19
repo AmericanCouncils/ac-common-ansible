@@ -45,9 +45,7 @@
   apt: pkg=python-pip
 
 - name: update pip
-  command: pip install --upgrade pip
-  register: pip_update_result
-  changed_when: "'already up-to-date' not in pip_update_result.stdout"
+  pip: name=pip state=latest
 
 # TODO: Remove these after all our machines no longer have this old package
 - name: uninstall supervisor apt package
@@ -56,7 +54,7 @@
   file: path=/etc/supervisor/ state=absent
 
 - name: install supervisor
-  pip: name=supervisor
+  pip: name=supervisor version=3.0b2 state=present
   notify:
     - hard restart supervisor
 
