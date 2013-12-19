@@ -80,6 +80,7 @@
   file: src=/lib/init/upstart-job
         dest=/etc/init.d/supervisor
         state=link
+        force=yes
 
 - name: install supervisor config file
   copy: src=../files/supervisord.conf
