@@ -1,2 +1,0 @@
-- name: install nfs support
-  apt: pkg=nfs-common
