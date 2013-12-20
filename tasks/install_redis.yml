@@ -10,3 +10,4 @@
   vars:
     service: redis
     command: /usr/bin/redis-server /etc/redis/redis.conf
+    procname: redis-server
