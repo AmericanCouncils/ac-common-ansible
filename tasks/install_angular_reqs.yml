@@ -12,7 +12,6 @@
 - name: install sass gem
   gem: name=sass state=present
 
-# TODO: Add support for prerelease gems to ansible gem module
-- name: install sass-css-importer gem, prerelease version
-  command: gem install sass-css-importer --pre
+- name: install sass-css-importer gem
+  gem: name=sass-css-importer state=present version=1.0.0.beta.0
 
