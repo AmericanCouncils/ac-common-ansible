@@ -1,0 +1,12 @@
+- name: install redis-server
+  apt: pkg=redis-server
+
+- name: set up redis.conf
+  copy: src=../files/redis.conf dest=/etc/redis/redis.conf
+  notify:
+    - restart redis
+
+- include: supervisorify.yml
+  vars:
+    service: redis
+    command: /usr/bin/redis-server /etc/redis/redis.conf
