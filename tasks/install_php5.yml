@@ -1,5 +1,10 @@
-- name: access modern PHP PPA
+- name: access modern PHP repository
   apt_repository: repo=ppa:ondrej/php5
+  register: php_repo
+
+- name: update apt cache for nphp repo
+  apt: update_cache=yes
+  when: php_repo.changed
 
 - name: install PHP 5 packages
   apt: pkg={{item}}
