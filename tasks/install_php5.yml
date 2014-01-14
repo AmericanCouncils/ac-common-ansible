@@ -1,3 +1,6 @@
+- name: access modern PHP PPA
+  apt_repository: repo=ppa:ondrej/php5
+
 - name: install PHP 5 packages
   apt: pkg={{item}}
   with_items:
