@@ -8,7 +8,8 @@
     - restart php5-fpm
 
 - name: update php.ini for php5-fpm
-  copy: src=../files/php.ini dest=/etc/php5/fpm/php.ini
+  copy: src=../files/php.ini
+        dest=/etc/php5/fpm/php.ini
   notify:
     - restart php5-fpm
 
