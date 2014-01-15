@@ -1,28 +1,27 @@
-- name: access modern PHP repository
-  apt_repository: repo=ppa:ondrej/php5
-  register: php_repo
+- name: install GPG key for dotdeb PHP repository
+  apt_key: url='http://www.dotdeb.org/dotdeb.gpg'
 
-- name: update apt cache for nphp repo
-  apt: update_cache=yes
-  when: php_repo.changed
+- name: access dotdeb PHP repository (version 5.5)
+  apt_repository: repo='deb http://packages.dotdeb.org wheezy-php55 all'
+                  update_cache=yes
 
 - name: install PHP 5 packages
   apt: pkg={{item}}
   with_items:
     - php5-dev
     - php5-cli
-    - php5-xmlrpc
-    - php-apc
-    - php5-mysql
-    - php5-mongo
+    - php5-apcu
     - php5-curl
-    - php5-intl
     - php5-gmp
-
-- name: set up configuration symlink for PHP mongo driver
-  file: src=/etc/php5/mods-available/mongo.ini
-        dest=/etc/php5/conf.d/mongo.ini
-        state=link
+    - php5-intl
+    - php5-memcached
+    - php5-memcache
+    - php5-mongo
+    - php5-mysql
+    - php5-pgsql
+    - php5-redis
+    - php5-sqlite
+    - php5-xmlrpc
 
 - name: install composer
   shell: curl -s http://getcomposer.org/installer | php -- --install-dir=/usr/local/bin
