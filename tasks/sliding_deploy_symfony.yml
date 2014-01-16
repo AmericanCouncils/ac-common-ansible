@@ -17,6 +17,8 @@
   with_items:
     - prod
     - dev
+  notify:
+    - restart php5-fpm
 
 - include: sliding_deploy_apply.yml
   # Passing through vars: app_dir, name
