@@ -16,24 +16,6 @@
   command: bower install --dev
            chdir="{{app_dir}}/deployments/{{name}}/setup"
 
-# NOTE: Tasks below use the 'removes' tag to avoid running the command unless
-# the item exists; it does not actually remove anything.
-
-- name: sliding_deploy_angular {{name}} - install npm dependencies for nested angular-ui-bootstrap
-  command: npm install
-           chdir="{{app_dir}}/deployments/{{name}}/setup/bower_components/angular-ui-bootstrap"
-           removes="{{app_dir}}/deployments/{{name}}/setup/bower_components/angular-ui-bootstrap"
-
-- name: sliding_deploy_angular {{name}} - workaround bug in nested angular-ui-bootstrap build script
-  command: grunt html2js
-           chdir="{{app_dir}}/deployments/{{name}}/setup/bower_components/angular-ui-bootstrap"
-           removes="{{app_dir}}/deployments/{{name}}/setup/bower_components/angular-ui-bootstrap"
-
-- name: sliding_deploy_angular {{name}} - build nested angular-ui-bootstrap
-  command: grunt build
-           chdir="{{app_dir}}/deployments/{{name}}/setup/bower_components/angular-ui-bootstrap"
-           removes="{{app_dir}}/deployments/{{name}}/setup/bower_components/angular-ui-bootstrap"
-
 - name: sliding_deploy_angular {{name}} - build dist
   command: grunt build
            chdir="{{app_dir}}/deployments/{{name}}/setup"
