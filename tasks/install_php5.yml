@@ -27,6 +27,9 @@
     - php5-sqlite
     - php5-xmlrpc
 
+- name: install phpunit
+  apt: pkg=phpunit
+
 - name: install composer
   shell: curl -s http://getcomposer.org/installer | php -- --install-dir=/usr/local/bin
          creates=/usr/local/bin/composer.phar
