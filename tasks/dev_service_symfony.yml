@@ -4,6 +4,6 @@
 - include: supervisorify.yml
   vars:
     service: "{{name}}"
-    command: "/usr/bin/php5 ./app/console server:run -vv {{ansible_eth1.ipv4.address}}:80"
+    command: "/usr/bin/php5 ./app/console server:run -vvv --env={{symfony_env}} {{ansible_eth1.ipv4.address}}:80"
     chdir: "{{dir}}"
     stop_as_group: true
