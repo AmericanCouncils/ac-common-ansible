@@ -34,6 +34,7 @@
 - name: symlink composer to composer.phar
   file: src=/usr/local/bin/composer.phar
         dest=/usr/local/bin/composer
+        state=link
 
 - name: update php.ini for php5-cli
   copy: src=../files/php.ini dest=/etc/php5/cli/php.ini
