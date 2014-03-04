@@ -1,5 +1,5 @@
 - name: init_symfony_app - update composer dependencies
-  command: /usr/local/bin/composer.phar install
+  command: composer install
            chdir="{{dir}}"
   register: composer_result
   changed_when: "'Nothing to install or update' not in composer_result.stdout"
