@@ -1,3 +1,5 @@
+#!/bin/sh
+
 # custom install script for ffmpeg for use on travis
 
 # TODO: Clear ffmpeg_sources and ffmpeg_build if they already exist
