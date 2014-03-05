@@ -1,3 +1,6 @@
+- name: update tzdata
+  command: /usr/sbin/dpkg-reconfigure --frontend noninteractive tzdata
+
 - name: hard restart supervisor
   service: name=supervisor state=restarted sleep=1
 
