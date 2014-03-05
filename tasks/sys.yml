@@ -5,6 +5,16 @@
   command: update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
            creates=/etc/default/locale
 
+- name: set /etc/localtime
+  file: src=/usr/share/zoneinfo/{{timezone|default('America/New_York')}}
+        dest=/etc/localtime
+        state=link
+        force=yes
+
+- name: set /etc/timezone
+  template: src=../templates/timezone.j2 dest=/etc/timezone
+  notify: update tzdata
+
 - name: set shell prompt to show full hostname with production tag
   lineinfile: dest={{item}}
               regexp="^export PS1="
