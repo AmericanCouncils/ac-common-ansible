@@ -1,0 +1,3 @@
+- name: install mediainfo
+  apt: pkg=mediainfo
+       state=present
