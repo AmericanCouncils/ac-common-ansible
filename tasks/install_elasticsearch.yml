@@ -1,0 +1,13 @@
+- include: install_openjdk.yml
+
+- name: Download elasticsearch
+  get_url: url=http://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-1.0.1.deb dest=~/elasticsearch-1.0.1.deb
+
+- name: Install elasticsearch .deb file
+  shell: dpkg -i ~/elasticsearch-1.0.1.deb
+
+- include: supervisorify.yml
+  vars:
+    service: elasticsearch
+    command: /usr/share/elasticsearch/bin/elasticsearch
+    procname: elasticsearch
