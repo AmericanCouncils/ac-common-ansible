@@ -13,7 +13,7 @@
            chdir="{{app_dir}}/deployments/{{name}}/setup"
 
 - name: sliding_deploy_angular {{name}} - install bower dependencies
-  command: bower install --dev
+  command: bower install --dev --allow-root
            chdir="{{app_dir}}/deployments/{{name}}/setup"
 
 - name: sliding_deploy_angular {{name}} - build dist
