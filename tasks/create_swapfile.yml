@@ -1,0 +1,9 @@
+# Creates and enables a swap file for systems that need (usually vagrant dev machines)
+
+- name: copy swapfile create script
+  template: src=../templates/create_swap.sh.j2
+            dest=/tmp/create_swap.sh
+            mode=0755
+
+- name: create swapfile at /swapfile
+  command: /tmp/create_swap.sh creates=/swapfile
