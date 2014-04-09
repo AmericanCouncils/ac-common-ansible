@@ -1,14 +1,3 @@
-- name: install GPG key for dotdeb PHP repository
-  apt_key: url='http://www.dotdeb.org/dotdeb.gpg'
-
-- name: access dotdeb base repository
-  apt_repository: repo='deb http://packages.dotdeb.org wheezy all'
-                  update_cache=yes
-
-- name: access dotdeb PHP repository (version 5.5)
-  apt_repository: repo='deb http://packages.dotdeb.org wheezy-php55 all'
-                  update_cache=yes
-
 - name: install PHP 5 packages
   apt: pkg={{item}}
   with_items:
