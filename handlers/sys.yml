@@ -19,8 +19,8 @@
 - name: restart php5-fpm
   supervisorctl: name=php5-fpm state=restarted
 
-- name: restart rabbitmq
-  supervisorctl: name=rabbitmq state=restarted
+- name: restart rabbitmq-server
+  supervisorctl: name=rabbitmq-server state=restarted
 
 - name: restart redis
   supervisorctl: name=redis state=restarted

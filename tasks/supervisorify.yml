@@ -1,3 +1,12 @@
+- name: supervisorify {{service}} - remove old-style rc startup links
+  service: name={{service}} enabled=no
+  ignore_errors: True
+
+- name: supervisorify {{service}} - install supervisor init script wrapper
+  copy: src=../files/init-supervisor-wrapper
+        dest=/sbin/init-supervisor-wrapper
+        mode=555
+
 - name: supervisorify {{service}} - link old-style init script to wrapper
   file: src=/sbin/init-supervisor-wrapper
         dest=/etc/init.d/{{service}}
@@ -5,20 +14,12 @@
         force=yes
   register: init_script
 
-- name: supervisorify {{service}} - remove old-style rc startup links
-  service: name={{service}} enabled=no
-
 - name: supervisorify {{service}} - create supervisor service config file
   template: src=../templates/supervisor-service.conf.j2
             dest=/etc/supervisor.d/{{service}}-supervisor.conf
   notify:
     - hard restart supervisor
     - restart {{service}}
-
-- name: supervisorify {{service}} - install supervisor init script wrapper
-  copy: src=../files/init-supervisor-wrapper
-        dest=/sbin/init-supervisor-wrapper
-        mode=555
 
 - name: supervisorify {{service}} - remove upstart config for service
   file: path=/etc/init/{{service}}.conf

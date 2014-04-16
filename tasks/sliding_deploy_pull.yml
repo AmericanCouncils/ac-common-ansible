@@ -19,6 +19,7 @@
        dest="{{app_dir}}/deployments/{{name}}/temp"
        version="{{version}}"
        depth=1
+       accept_hostkey=true
   register: git_clone
 
 - name: sliding_deploy_pull {{name}} - setup deployment name
