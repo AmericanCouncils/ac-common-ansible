@@ -2,14 +2,19 @@
 
 # custom install script for ffmpeg for use on travis
 
-# TODO: Clear ffmpeg_sources and ffmpeg_build if they already exist
 # TODO: Use /usr/local/bin as bindir, don't install to $HOME/bin and move after
+
+# fail entire script on first error
+set -e
+
+rm -rf ~/ffmpeg_sources
+rm -rf ~/ffmpeg_build
 
 ## dependencies
 sudo apt-get -y install autoconf automake build-essential git libass-dev libgpac-dev \
   libsdl1.2-dev libtheora-dev libtool libva-dev libvdpau-dev libvorbis-dev libx11-dev \
   libxext-dev libxfixes-dev pkg-config texi2html zlib1g-dev
-mkdir ~/ffmpeg_sources
+mkdir -p ~/ffmpeg_sources
 
 ## yasm
 cd ~/ffmpeg_sources
@@ -24,8 +29,9 @@ make distclean
 
 ## x264
 cd ~/ffmpeg_sources
-git clone --depth 1 git://git.videolan.org/x264.git
+git clone git://git.videolan.org/x264.git
 cd x264
+git checkout dfdb6465dea2990a4531d076ed2644c8ccb0f3a9
 ./configure --prefix="$HOME/ffmpeg_build" --bindir="$HOME/bin" --enable-static
 make
 make install
@@ -33,8 +39,9 @@ make distclean
 
 ## fdk-aac
 cd ~/ffmpeg_sources
-git clone --depth 1 git://github.com/mstorsjo/fdk-aac.git
+git clone git://github.com/mstorsjo/fdk-aac.git
 cd fdk-aac
+git checkout 2f29dd48d02d402169246e3c7f9256869817392a
 autoreconf -fiv
 ./configure --prefix="$HOME/ffmpeg_build" --disable-shared
 make
@@ -64,8 +71,9 @@ make distclean
 
 ## libvpx
 cd ~/ffmpeg_sources
-git clone --depth 1 http://git.chromium.org/webm/libvpx.git
+git clone http://git.chromium.org/webm/libvpx.git
 cd libvpx
+git checkout d6606d1ea734bbd7b3ab3e0852cedace5e4f0cd6
 ./configure --prefix="$HOME/ffmpeg_build" --disable-examples
 make
 make install
@@ -73,8 +81,9 @@ make clean
 
 ## FFMPEG!!
 cd ~/ffmpeg_sources
-git clone --depth 1 git://source.ffmpeg.org/ffmpeg
+git clone git://source.ffmpeg.org/ffmpeg
 cd ffmpeg
+git checkout 259292f9d484f31812a6ecbf4bfd3efd7c5905fd
 PKG_CONFIG_PATH="$HOME/ffmpeg_build/lib/pkgconfig"
 export PKG_CONFIG_PATH
 ./configure --prefix="$HOME/ffmpeg_build" \
