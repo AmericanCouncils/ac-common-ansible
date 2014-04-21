@@ -1,3 +1,18 @@
+- name: install GPG key for dotdeb PHP repository
+  apt_key: url='http://www.dotdeb.org/dotdeb.gpg'
+  when: ansible_lsb.id == "Ubuntu" and ansible_lsb.major_release|int <= 13
+
+- name: access dotdeb base repository
+  apt_repository: repo='deb http://packages.dotdeb.org wheezy all'
+                    update_cache=yes
+  when: ansible_lsb.id == "Ubuntu" and ansible_lsb.major_release|int <= 13
+
+
+- name: access dotdeb PHP repository (version 5.5)
+  apt_repository: repo='deb http://packages.dotdeb.org wheezy-php55 all'
+                    update_cache=yes
+  when: ansible_lsb.id == "Ubuntu" and ansible_lsb.major_release|int <= 13
+
 - name: install PHP 5 packages
   apt: pkg={{item}}
   with_items:
@@ -27,3 +42,4 @@
 
 - name: update php.ini for php5-cli
   copy: src=../files/php.ini dest=/etc/php5/cli/php.ini
+

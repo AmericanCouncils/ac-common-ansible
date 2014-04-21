@@ -9,7 +9,7 @@
         dest="{{app_dir}}/deployments/{{name}}/setup/app/scripts/settings.coffee"
 
 - name: sliding_deploy_angular {{name}} - install npm dependencies
-  command: npm install
+  command: npm install --unsafe-perm
            chdir="{{app_dir}}/deployments/{{name}}/setup"
 
 - name: sliding_deploy_angular {{name}} - install bower dependencies
