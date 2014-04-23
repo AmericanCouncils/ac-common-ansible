@@ -14,6 +14,9 @@ rm -rf ~/ffmpeg_build
 sudo apt-get -y install autoconf automake build-essential git libass-dev libgpac-dev \
   libsdl1.2-dev libtheora-dev libtool libva-dev libvdpau-dev libvorbis-dev libx11-dev \
   libxext-dev libxfixes-dev pkg-config texi2html zlib1g-dev
+
+export PATH=$PATH:$HOME/bin
+
 mkdir -p ~/ffmpeg_sources
 
 ## yasm
@@ -83,7 +86,7 @@ make clean
 cd ~/ffmpeg_sources
 git clone git://source.ffmpeg.org/ffmpeg
 cd ffmpeg
-git checkout 259292f9d484f31812a6ecbf4bfd3efd7c5905fd
+git checkout 48cd103
 PKG_CONFIG_PATH="$HOME/ffmpeg_build/lib/pkgconfig"
 export PKG_CONFIG_PATH
 ./configure --prefix="$HOME/ffmpeg_build" \
