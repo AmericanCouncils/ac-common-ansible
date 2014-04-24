@@ -1,0 +1,6 @@
+- name: allow incoming connections on TCP port {{port}}
+  tags: firewall
+  template: src=../templates/ferm_allow_port.conf.j2
+            dest=/etc/ferm/ferm.d/allow-{{port}}.conf
+  notify:
+    - reload firewall

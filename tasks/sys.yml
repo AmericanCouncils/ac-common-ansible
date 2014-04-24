@@ -41,19 +41,19 @@
               regexp="Defaults env_keep\\+=SSH_AUTH_SOCK"
               insertafter="^Defaults"
 
-- name: install pycurl
-  apt: pkg=python-pycurl
-
-- name: access modern git repository
-  apt_repository: repo=ppa:git-core/ppa
-
 - name: add github ssh host key
   copy: src=../files/ssh_known_hosts
         dest=/etc/ssh/ssh_known_hosts
         mode=0444
 
+- name: access modern git repository
+  apt_repository: repo=ppa:git-core/ppa
+
 - name: update apt cache
   apt: update_cache=yes
+
+- name: install pycurl
+  apt: pkg=python-pycurl
 
 - name: install git
   apt: pkg=git
@@ -63,6 +63,25 @@
 
 - name: update pip
   pip: name=pip state=latest
+
+- name: install ferm
+  tags: firewall
+  apt: pkg=ferm
+  notify:
+    - reload firewall
+
+- name: configure default ferm firewall rules
+  tags: firewall
+  copy: src=../files/ferm.conf
+        dest=/etc/ferm/ferm.conf
+  notify:
+    - reload firewall
+
+- name: create ferm.d conf directory
+  tags: firewall
+  file: path=/etc/ferm/ferm.d state=directory
+  notify:
+    - reload firewall
 
 # TODO: Remove these after all our machines no longer have this old package
 - name: uninstall supervisor apt package

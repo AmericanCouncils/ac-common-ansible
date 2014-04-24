@@ -1,6 +1,9 @@
 - name: update tzdata
   command: /usr/sbin/dpkg-reconfigure --frontend noninteractive tzdata
 
+- name: reload firewall
+  service: name=ferm state=restarted
+
 - name: hard restart supervisor
   service: name=supervisor state=restarted sleep=1
 
