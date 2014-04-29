@@ -46,14 +46,14 @@
         dest=/etc/ssh/ssh_known_hosts
         mode=0444
 
-- name: access modern git repository
-  apt_repository: repo=ppa:git-core/ppa
-
 - name: update apt cache
   apt: update_cache=yes
 
 - name: install pycurl
   apt: pkg=python-pycurl
+
+- name: access modern git repository
+  apt_repository: repo=ppa:git-core/ppa
 
 - name: install git
   apt: pkg=git
