@@ -15,3 +15,7 @@ stopasgroup=true
 {% if daemon_user is defined %}
 user={{daemon_user}}
 {% endif %}
+{% if numprocs is defined %}
+numprocs={{numprocs}}
+process_name=%(process_num)02d
+{% endif %}
