@@ -5,3 +5,4 @@
     chdir: "{{dir}}"
     stop_as_group: true
     stopsignal: KILL
+    numprocs: "{{process_count}}"
