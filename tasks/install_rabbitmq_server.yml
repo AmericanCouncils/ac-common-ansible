@@ -9,5 +9,5 @@
   vars:
     service: rabbitmq-server
     command: /usr/lib/rabbitmq/bin/rabbitmq-server
-    procname: beam # FIXME: Would be nice to get only the Erlang proc running rabbit
+    procname: beam.smp # FIXME: Would be nice to get only the Erlang proc running rabbit
     daemon_environment: HOME=/tmp
