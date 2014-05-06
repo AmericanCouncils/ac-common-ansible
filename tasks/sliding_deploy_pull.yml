@@ -14,6 +14,9 @@
   file: path="{{app_dir}}/deployments/{{name}}/temp"
         state=absent
 
+- name: create /root/.ssh directory
+  file: path=/root/.ssh/ state=directory owner=root group=root
+
 - name: sliding_deploy_pull {{name}} - clone repository
   git: repo="{{git_url}}"
        dest="{{app_dir}}/deployments/{{name}}/temp"

@@ -17,6 +17,12 @@
   with_items:
     - prod
     - dev
+
+# Despite the 'removes' argument, this command removes no files.
+# We just don't want to try to restart php5-fpm if it's not installed.
+- name: force php5-fpm restart
+  command: echo triggering restart of php5-fpm
+           removes=/etc/supervisor.d/php5-fpm-supervisor.conf
   notify:
     - restart php5-fpm
 
