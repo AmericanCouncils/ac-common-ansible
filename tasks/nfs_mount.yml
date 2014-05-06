@@ -1,0 +1,14 @@
+- name: install nfs support
+  apt: pkg=nfs-common
+       state=present
+
+- name: create mountpoint for {{name}}
+  file: path="/vrthst/{{name}}"
+        state=directory
+        recurse=yes
+
+- name: nfs mount {{name}}
+  mount: name="/vrthst/{{name}}"
+         fstype=nfs
+         src="{{host}}:/{{hostDir}}"
+         state=mounted
