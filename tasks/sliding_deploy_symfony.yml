@@ -3,8 +3,8 @@
     # Passing through: app_dir, name, user, git_url, version, shared_dirs
     copied_dirs: [ "vendor" ]
 
-- name: sliding_deploy_symfony {{name}} - copy parameters.yml to config folder
-  copy: src="files/secure/{{params_file}}"
+- name: sliding_deploy_symfony {{name}} - parameters template to config folder
+  template: src="templates/secure/{{params_template}}"
         dest="{{app_dir}}/deployments/{{name}}/setup/app/config/parameters.yml"
 
 - include: init_symfony_app.yml
