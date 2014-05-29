@@ -7,8 +7,8 @@
 - name: hard restart supervisor
   service: name=supervisor state=restarted sleep=1
 
-- name: restart rsyslog
-  service: name=rsyslog state=restarted
+- name: reload syslog-ng
+  service: name=syslog-ng state=reloaded
 
 - name: restart nginx
   supervisorctl: name=nginx state=restarted

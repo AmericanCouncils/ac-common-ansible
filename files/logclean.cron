@@ -1,0 +1,2 @@
+# Delete old log files
+17 3      * * *    root   find /var/log -type f -mtime +7 -delete

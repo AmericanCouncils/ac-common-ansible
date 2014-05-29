@@ -1,7 +1,7 @@
 - include: install_nginx.yml
 
 - name: nginx_app_config {{name}} - place config file
-  template: src=../../templates/{{template}}
+  template: src=../../{{template}}
             dest=/etc/nginx/sites-available/{{name}}-nginx
   tags: nginx_conf
   notify:

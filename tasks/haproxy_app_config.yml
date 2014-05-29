@@ -8,7 +8,7 @@
     - restart haproxy
 
 - name: haproxy config
-  template: src=../../templates/{{template}}
+  template: src=../../{{template}}
             dest=/etc/haproxy/haproxy.cfg
   tags: haproxy_conf
   notify:

@@ -8,16 +8,6 @@
   notify:
     - restart haproxy
 
-- name: set up syslog for haproxy messages
-  copy: src=../files/haproxy-rsyslog.conf
-        dest=/etc/rsyslog.d/60-haproxy.conf
-  notify:
-    - restart rsyslog
-
-- name: set up rotation for haproxy log files
-  copy: src=../files/haproxy-logrotate
-        dest=/etc/logrotate.d/haproxy
-
 - name: install haproxy required packages
   apt: pkg=libssl0.9.8
 

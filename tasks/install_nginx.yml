@@ -1,14 +1,22 @@
-- name: install nginx
-  apt: pkg=nginx
+- name: download nginx 1.7.1
+  get_url: url="http://nginx.org/packages/mainline/ubuntu/pool/nginx/n/nginx/nginx_1.7.1-1~trusty_amd64.deb" dest=/var/local/nginx-1.7.1.deb
+
+- name: install nginx 1.7.1
+  apt: deb=/var/local/nginx-1.7.1.deb
 
 - name: delete default nginx app
   file: path=/etc/nginx/sites-enabled/default state=absent
   notify:
     - restart nginx
 
+- name: delete useless nginx conf.d directory
+  file: path=/etc/nginx/conf.d state=absent
+  notify:
+    - restart nginx
+
 - name: setup central nginx config
-  template: src=../templates/nginx.conf.j2
-            dest=/etc/nginx/nginx.conf
+  copy: src=../files/nginx.conf
+        dest=/etc/nginx/nginx.conf
   notify:
     - restart nginx
 

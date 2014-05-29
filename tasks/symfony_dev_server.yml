@@ -1,3 +1,5 @@
+- include: install_php5_fpm.yml
+
 - include: ferm_allow_global_port.yml
   vars:
     port: 80
@@ -5,9 +7,11 @@
 - include: init_symfony_app.yml
   # Passing through variable: dir
 
-- include: supervisorify.yml
+- include: symfony_app_user.yml
   vars:
-    service: "{{name}}"
-    command: "/usr/bin/php5 ./app/console server:run -vvv --env={{symfony_env|default('dev')}} 0.0.0.0:80"
-    chdir: "{{dir}}"
-    stop_as_group: true
+    user: "{{name}}"
+
+- include: nginx_app_config.yml
+  vars:
+    # Passing through variable: name
+    template: common/templates/symfony-dev-nginx.j2
