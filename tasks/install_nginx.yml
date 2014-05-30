@@ -3,6 +3,8 @@
 
 - name: install nginx 1.7.1
   apt: deb=/var/local/nginx-1.7.1.deb
+  notify:
+    - restart nginx
 
 - name: delete default nginx app
   file: path=/etc/nginx/sites-enabled/default state=absent
@@ -13,6 +15,12 @@
   file: path=/etc/nginx/conf.d state=absent
   notify:
     - restart nginx
+
+- name: create nginx site directories
+  file: path=/etc/nginx/sites-{{item}}/ state=directory
+  with_items:
+    - enabled
+    - available
 
 - name: setup central nginx config
   copy: src=../files/nginx.conf
