@@ -5,7 +5,7 @@
     copied_dirs: [ "bower_components", "node_modules" ]
 
 - name: sliding_deploy_angular {{name}} - copy settings.coffee to scripts folder
-  copy: src="files/{{settings_file}}"
+  copy: src="{{settings_file}}"
         dest="{{app_dir}}/deployments/{{name}}/setup/app/scripts/settings.coffee"
 
 - name: sliding_deploy_angular {{name}} - install npm dependencies
