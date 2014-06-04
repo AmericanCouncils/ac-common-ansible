@@ -1,7 +1,7 @@
 server {
   listen {{nginx_port|default(1080)}};
   server_name {{domain|default(ansible_hostname)}};
-  root {{root}}
+  root {{root}};
 
   {% block proxy_setup %}
   set_real_ip_from 127.0.0.1;
@@ -17,16 +17,18 @@ server {
   add_header Access-Control-Allow-Origin '*';
   add_header Access-Control-Allow-Methods  'GET,POST,PUT,DELETE,OPTIONS';
   add_header Access-Control-Allow-Headers 'Keep-Alive,User-Agent,If-Modified-Since,Cache-Control,X-Requested-With,Content-Type,Origin,Authorization';
-
-  if ($request_method = 'OPTIONS') {
-    add_header Access-Control-Max-Age 3600;
-    add_header Content-Type 'text/plain charset=UTF-8';
-    add_header Content-Length 0;
-    return 204;
-  }
   {% endblock %}
 
   location ~* ^/({% block symfony_path_pattern %}api|apidoc|openid|_profiler{% endblock %})(/|$) {
+    {% block cors_options %}
+    if ($request_method = 'OPTIONS') {
+      add_header Access-Control-Max-Age 3600;
+      add_header Content-Type 'text/plain charset=UTF-8';
+      add_header Content-Length 0;
+      return 204;
+    }
+    {% endblock %}
+
     port_in_redirect off;
     {% if symfony_devmode|default(false) %}
       {% set phpscript = 'app' %}
