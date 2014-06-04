@@ -33,3 +33,6 @@
 
 - name: restart elasticsearch
   supervisorctl: name=elasticsearch state=restarted
+
+- name: restart logstash
+  supervisorctl: name=logstash state=restarted

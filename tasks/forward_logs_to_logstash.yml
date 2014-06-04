@@ -1,0 +1,6 @@
+- name: configure syslog-ng to send messages to logstash at {{logstash_host}}
+  template: src=../templates/syslog-logstash-forward.conf
+            dest=/etc/syslog-ng/conf.d/syslog-logstash-forward.conf
+  notify:
+    - reload syslog-ng
+

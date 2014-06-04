@@ -1,0 +1,25 @@
+- include: install_openjdk.yml
+
+- name: add logstash apt key
+  apt_key: id='D88E42B4' url='http://packages.elasticsearch.org/GPG-KEY-elasticsearch' state=present
+
+- name: add logstash repository
+  apt_repository: repo='deb http://packages.elasticsearch.org/logstash/1.4/debian stable main' state=present
+
+- name: install logstash
+  apt: name=logstash=1.4.1-1-bd507eb state=present
+  notify:
+    - restart logstash
+
+- name: copy logstash config
+  tags: logstash_conf
+  copy: src=files/{{logstash_conf}}
+        dest=/etc/logstash/logstash.conf
+  notify:
+    - restart logstash
+
+- include: supervisorify.yml
+  vars:
+    service: logstash
+    command: /opt/logstash/bin/logstash -f /etc/logstash/logstash.conf
+    start_secs: 6
