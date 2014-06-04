@@ -1,19 +1,5 @@
-server {
-  listen 80;
-  root {{dir}}/web;
-  client_max_body_size 200m;
+{% extends "symfony-nginx-base.j2" %}
 
-  location / {
-    try_files $uri /app_dev.php$is_args$args;
-  }
-
-  location ~ ^/app_dev.php(/|$) {
-    include fastcgi_params;
-    fastcgi_pass unix:/var/run/php5-fpm-{{name}}.sock;
-    fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-    fastcgi_param HTTPS off;
-  }
-
-  access_log syslog:server=unix:/var/run/nginx-log.sock combined_with_reqid;
-  error_log syslog:server=unix:/var/run/nginx-log.sock notice;
-}
+{# Disable haproxy-related config #}
+{% block proxy_setup %}{% endblock %}
+{% block fastcgi_https_proxy %}{% endblock %}

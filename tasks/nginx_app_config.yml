@@ -7,7 +7,7 @@
   notify:
     - restart nginx
 
-- name: symlink nginx config to sites-enabled
+- name: nginx_app_config {{name}} - symlink nginx config to sites-enabled
   file: src=/etc/nginx/sites-available/{{name}}-nginx
         dest=/etc/nginx/sites-enabled/{{name}}-nginx
         state=link
