@@ -79,6 +79,9 @@
 - name: set a cron job to clear out old log files
   copy: src=../files/logclean.cron
         dest=/etc/cron.d/logclean
+        mode=0444
+        owner=root
+        group=root
 
 - name: remove landscape
   apt: pkg=landscape-common state=absent
