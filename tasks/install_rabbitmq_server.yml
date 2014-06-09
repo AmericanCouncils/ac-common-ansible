@@ -3,7 +3,6 @@
 
 - name: enable rabbitmq management
   shell: rabbitmq-plugins enable rabbitmq_management
-  sudo: true
 
 - include: supervisorify.yml
   vars:

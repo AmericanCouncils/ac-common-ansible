@@ -67,9 +67,6 @@
 - name: remove rsyslog
   apt: pkg=rsyslog state=absent
 
-- name: remove logrotate
-  apt: pkg=logrotate state=absent
-
 - name: install syslog-ng
   apt: pkg=syslog-ng state=present
 
@@ -85,6 +82,9 @@
 
 - name: remove landscape
   apt: pkg=landscape-common state=absent
+
+- name: remove consolekit
+  apt: pkg=consolekit state=absent
 
 - name: install ferm
   tags: firewall
@@ -111,10 +111,10 @@
 - name: delete old supervisor conf directory
   file: path=/etc/supervisor/ state=absent
 
+# FIXME: Would be nice to notify a supervisor restart after this, but it seems
+# to fire a notification even when nothing changes!
 - name: install supervisor with full syslog support
   pip: name="git+http://github.com/samv/supervisor.git@5a2b85e609#egg=supervisor" state=present
-  notify:
-    - hard restart supervisor
 
 - name: create supervisor config directory
   file: path=/etc/supervisor.d state=directory

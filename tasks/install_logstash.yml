@@ -15,6 +15,7 @@
   tags: logstash_conf
   copy: src=files/{{logstash_conf}}
         dest=/etc/logstash/logstash.conf
+  tags: logstash_conf
   notify:
     - restart logstash
 
@@ -22,4 +23,4 @@
   vars:
     service: logstash
     command: /opt/logstash/bin/logstash -f /etc/logstash/logstash.conf
-    start_secs: 6
+    start_secs: 15
