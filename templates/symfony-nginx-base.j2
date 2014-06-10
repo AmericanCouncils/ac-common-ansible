@@ -31,9 +31,9 @@ server {
 
     port_in_redirect off;
     {% if symfony_devmode|default(false) %}
-      {% set phpscript = 'app' %}
-    {% else %}
       {% set phpscript = 'app_dev' %}
+    {% else %}
+      {% set phpscript = 'app' %}
     {% endif %}
     rewrite ^ /{{phpscript}}.php?$query_string break;
 
