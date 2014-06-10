@@ -35,7 +35,7 @@ server {
     {% else %}
       {% set phpscript = 'app_dev' %}
     {% endif %}
-    rewrite ^ {{root}}{{phpscript}}.php?$query_string break;
+    rewrite ^ /{{phpscript}}.php?$query_string break;
 
     include fastcgi_params;
     fastcgi_pass unix:/var/run/php5-fpm-{{name}}.sock;
