@@ -55,6 +55,20 @@
 - name: update apt cache
   apt: update_cache=yes
 
+- name: install ntp daemon
+  apt: pkg=chrony
+  notify:
+    - restart chrony
+
+- name: configure ntp daemon
+  copy: src=../files/chrony.conf
+        dest=/etc/chrony/chrony.conf
+        mode=0644
+        owner=root
+        group=root
+  notify:
+    - restart chrony
+
 - name: install pycurl
   apt: pkg=python-pycurl
 
