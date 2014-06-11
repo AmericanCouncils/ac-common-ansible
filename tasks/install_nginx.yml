@@ -22,6 +22,9 @@
     - enabled
     - available
 
+- name: create nginx log directory (nginx requires it even though it is unused)
+  file: path=/var/log/nginx state=directory
+
 - name: setup central nginx config
   copy: src=../files/nginx.conf
         dest=/etc/nginx/nginx.conf
