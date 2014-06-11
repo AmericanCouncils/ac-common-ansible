@@ -15,6 +15,12 @@
   template: src=../templates/timezone.j2 dest=/etc/timezone
   notify: update tzdata
 
+- name: create wtmp file
+  command: touch /var/log/wtmp creates=/var/log/wtmp
+
+- name: create lastlog file
+  command: touch /var/log/lastlog creates=/var/log/lastlog
+
 - name: set shell prompt to show full hostname with production tag
   lineinfile: dest={{item}}
               regexp="^export PS1="
