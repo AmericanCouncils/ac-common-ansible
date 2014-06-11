@@ -1,6 +1,12 @@
 - name: install mysql
   apt: pkg=mysql-server
 
+- name: create mysql socket directory
+  file: path=/var/run/mysqld
+        state=directory
+        owner=mysql
+        group=mysql
+
 - include: supervisorify.yml
   vars:
     service: mysql
