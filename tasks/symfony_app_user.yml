@@ -9,3 +9,8 @@
             dest=/etc/php5/fpm/pool.d/{{user}}.conf
   notify:
     - restart php5-fpm
+
+- name: symfony_app_user {{user}} - delete default php-fpm pool
+  file: path=/etc/pdp5/fpm/pool.d/www.conf state=absent
+  notify:
+    - restart php5-fpm

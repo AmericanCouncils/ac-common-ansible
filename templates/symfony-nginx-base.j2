@@ -2,13 +2,13 @@ server {
   listen {{nginx_port|default(1080)}};
   server_name {{domain|default(ansible_hostname)}};
   root {{root}};
+  port_in_redirect off;
+  client_max_body_size 200m;
 
   {% block proxy_setup %}
   set_real_ip_from 127.0.0.1;
   real_ip_header X-Forwarded-For;
   {% endblock %}
-
-  client_max_body_size 200m;
 
   access_log syslog:server=unix:/var/run/nginx-log.sock combined_with_reqid;
   error_log syslog:server=unix:/var/run/nginx-log.sock notice;
@@ -19,7 +19,13 @@ server {
   add_header Access-Control-Allow-Headers 'Keep-Alive,User-Agent,If-Modified-Since,Cache-Control,X-Requested-With,Content-Type,Origin,Authorization';
   {% endblock %}
 
-  location ~* ^/({% block symfony_path_pattern %}api|apidoc|openid|_profiler{% endblock %})(/|$) {
+  {% block locations %}
+  location / {
+    try_files $uri @symfony;
+  }
+  {% endblock %}
+
+  location @symfony {
     {% block cors_options %}
     if ($request_method = 'OPTIONS') {
       add_header Access-Control-Max-Age 3600;
@@ -29,7 +35,6 @@ server {
     }
     {% endblock %}
 
-    port_in_redirect off;
     {% if symfony_devmode|default(false) %}
       {% set phpscript = 'app_dev' %}
     {% else %}
@@ -46,10 +51,4 @@ server {
     fastcgi_param HTTPS ON;
     {% endblock %}
   }
-
-  location /bundles {
-    alias {{root}}/bundles/;
-  }
-
-  {% block extra_locations %}{% endblock %}
 }
