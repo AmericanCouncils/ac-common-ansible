@@ -18,5 +18,6 @@ user={{daemon_user}}
 {% endif %}
 {% if numprocs is defined %}
 numprocs={{numprocs}}
-process_name=%(process_num)02d
+numprocs_start=1
+process_name={{service}}-%(process_num)02d
 {% endif %}

@@ -23,19 +23,14 @@
   command: stop {{service}}
   when: upstart_config.changed or init_script.changed
   ignore_errors: True
-  notify:
-    - restart {{service}}
 
 - name: supervisorify {{service}} - kill old service process directly
   shell: pkill -9 -f {{procname|default(service)}}
   when: upstart_config.changed or init_script.changed
   ignore_errors: True
-  notify:
-    - restart {{service}}
 
 - name: supervisorify {{service}} - create supervisor service config file
   template: src=../templates/supervisor-service.conf.j2
             dest=/etc/supervisor.d/{{service}}-supervisor.conf
   notify:
-    - hard restart supervisor
-    - restart {{service}}
+    - reload supervisor
