@@ -1,0 +1,4 @@
+- name: cd to /vagrant after login
+  lineinfile: dest=/home/vagrant/.bashrc
+              regexp="^cd /vagrant"
+              line="cd /vagrant"
