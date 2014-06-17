@@ -81,6 +81,9 @@
 - name: install pip
   apt: pkg=python-pip
 
+- name: install git setuptools
+  apt: pkg=python-setuptools-git
+
 - name: update pip
   pip: name=pip state=latest
 
@@ -131,10 +134,22 @@
 # TODO: Remove these after all our machines no longer have this old package
 - name: uninstall supervisor apt package
   apt: pkg=supervisor state=absent
+  notify:
+    - hard restart supervisor
 - name: delete old supervisor conf directory
   file: path=/etc/supervisor/ state=absent
+  notify:
+    - hard restart supervisor
+- name: delete old supervisor egg link
+  file: path=/usr/local/lib/python2.7/dist-packages/supervisor.egg-link state=absent
+  notify:
+    - hard restart supervisor
+- name: delete old supervisor temp src directory
+  file: path=/tmp/src/supervisor state=absent
+  notify:
+    - hard restart supervisor
 
-# FIXME: Would be nice to notify a supervisor restart after this, but it seems
+# FIXME: Would be nice to notify a supervisor restart after this, but pip seems
 # to fire a notification even when nothing changes!
 - name: install supervisor with full syslog support
   pip: name="git+http://github.com/samv/supervisor.git@5a2b85e609#egg=supervisor" state=present
