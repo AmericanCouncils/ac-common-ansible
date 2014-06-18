@@ -84,9 +84,6 @@
 - name: install git setuptools
   apt: pkg=python-setuptools-git
 
-- name: update pip
-  pip: name=pip state=latest
-
 - name: remove rsyslog
   apt: pkg=rsyslog state=absent
 
@@ -146,13 +143,18 @@
     - hard restart supervisor
 - name: delete old supervisor temp src directory
   file: path=/tmp/src/supervisor state=absent
+  register: old_tmp_src
   notify:
     - hard restart supervisor
+- name: uninstall old supervisor pip package
+  command: pip uninstall supervisor
+  when: old_tmp_src.changed
 
-# FIXME: Would be nice to notify a supervisor restart after this, but pip seems
-# to fire a notification even when nothing changes!
 - name: install supervisor with full syslog support
-  pip: name="git+http://github.com/samv/supervisor.git@5a2b85e609#egg=supervisor" state=present
+  command: pip install "git+http://github.com/samv/supervisor.git@5a2b85e609#egg=supervisor"
+           creates=/usr/local/lib/python2.7/dist-packages/supervisor/supervisord.py
+  notify:
+    - hard restart supervisor
 
 - name: create supervisor config directory
   file: path=/etc/supervisor.d state=directory
@@ -183,7 +185,8 @@
     - hard restart supervisor
 
 - name: install supervisor_twiddler rpc extension
-  pip: name=supervisor_twiddler extra_args="--no-deps"
+  command: pip install supervisor_twiddler --no-deps
+           creates=/usr/local/lib/python2.7/dist-packages/supervisor_twiddler/rpcinterface.py
   notify:
     - hard restart supervisor
 
