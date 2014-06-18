@@ -147,7 +147,7 @@
   notify:
     - hard restart supervisor
 - name: uninstall old supervisor pip package
-  command: pip uninstall supervisor
+  command: pip uninstall -y supervisor
   when: old_tmp_src.changed
 
 - name: install supervisor with full syslog support
