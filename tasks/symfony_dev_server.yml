@@ -16,4 +16,5 @@
     # Passing through variable: name
     template: common/templates/symfony-dev-nginx.j2
     root: "{{dir}}/web"
+    symfony_devmode: true
     port: 80
