@@ -1,5 +1,5 @@
 server {
-  listen {{nginx_port|default(1080)}};
+  listen {{port|default(1080)}};
   server_name {{domain|default(ansible_hostname)}};
   root {{root}};
   port_in_redirect off;
