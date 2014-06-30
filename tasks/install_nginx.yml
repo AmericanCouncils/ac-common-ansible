@@ -1,8 +1,13 @@
-- name: download nginx 1.7.2
-  get_url: url="http://nginx.org/packages/mainline/ubuntu/pool/nginx/n/nginx/nginx_1.7.2-1~trusty_amd64.deb" dest=/var/local/nginx-1.7.2.deb
+- name: access modern nginx repository
+  apt_repository: repo=ppa:chris-lea/nginx-devel
+  register: nginx_repo
 
-- name: install nginx 1.7.2
-  apt: deb=/var/local/nginx-1.7.2.deb
+- name: update apt cache for nginx repo
+  apt: update_cache=yes
+  when: nginx_repo.changed
+
+- name: install nginx 1.7 with third party modules
+  apt: pkg=nginx-extras
   notify:
     - restart nginx
 
