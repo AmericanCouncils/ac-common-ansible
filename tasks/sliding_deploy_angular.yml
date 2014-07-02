@@ -4,9 +4,20 @@
     shared_dirs: []
     copied_dirs: [ "bower_components", "node_modules" ]
 
+# should be conditional - the app/scripts approach is not universal
+- stat: path="{{app_dir}}/deployments/{{name}}/setup/app/scripts"
+  register: appScriptsPath
+
+- stat: path="{{app_dir}}/deployments/{{name}}/setup/gruntfile.coffee"
+  register: gruntfilePath
+
+- stat: path="{{app_dir}}/deployments/{{name}}/setup/gulpfile.coffee"
+  register: gulpfilePath
+
 - name: sliding_deploy_angular {{name}} - copy settings.coffee to scripts folder
   copy: src="files/{{settings_file}}"
         dest="{{app_dir}}/deployments/{{name}}/setup/app/scripts/settings.coffee"
+  when: appScriptsPath.stat.isdir is defined and appScriptsPath.stat.isdir == true
 
 - name: sliding_deploy_angular {{name}} - install npm dependencies
   command: npm install --unsafe-perm
@@ -16,9 +27,15 @@
   command: bower install --dev --allow-root
            chdir="{{app_dir}}/deployments/{{name}}/setup"
 
-- name: sliding_deploy_angular {{name}} - build dist
+- name: sliding_deploy_angular {{name}} - build dist with grunt
   command: grunt build
            chdir="{{app_dir}}/deployments/{{name}}/setup"
+  when: gruntfilePath.stat.exists == true
+
+- name: sliding_deploy_angular {{name}} - build dist with gulp
+  command: gulp build
+           chdir="{{app_dir}}/deployments/{{name}}/setup"
+  when: gulpfilePath.stat.exists == true
 
 # TODO: Run some kind of setup script provided by the app, if it's present
 

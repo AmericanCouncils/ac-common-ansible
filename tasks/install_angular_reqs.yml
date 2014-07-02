@@ -1,6 +1,8 @@
 - include: install_nodejs.yml
 
+# this is redundant, doe it matter?
 - include: install_grunt.yml
+- include: install_gulp.yml
 
 - include: install_bower.yml
 
