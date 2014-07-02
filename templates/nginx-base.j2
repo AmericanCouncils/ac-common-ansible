@@ -1,0 +1,40 @@
+server {
+  listen {{port|default(1080)}};
+  server_name {{domain|default(ansible_hostname)}};
+  root {{root}};
+  port_in_redirect off;
+  client_max_body_size 200m;
+
+  {% block proxy_setup %}
+  set_real_ip_from 127.0.0.1;
+  real_ip_header X-Forwarded-For;
+  {% endblock %}
+
+  access_log syslog:server=unix:/var/run/nginx-log.sock combined_with_reqid;
+  error_log syslog:server=unix:/var/run/nginx-log.sock notice;
+
+  {% block cors %}
+  more_set_headers
+    "Access-Control-Allow-Headers: Keep-Alive,User-Agent,If-Modified-Since,Cache-Control,X-Requested-With,Content-Type,Origin,Authorization"
+    "Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS"
+    "Access-Control-Allow-Origin: *"
+  ;
+  {% endblock %}
+
+  {% block locations %}
+  location / {
+    {% block cors_options %}
+    if ($request_method = 'OPTIONS') {
+      more_set_headers
+        "Access-Control-Max-Age: 3600"
+        "Content-Type: text/plain charset=UTF-8"
+        "Content-Length: 0"
+      ;
+      return 204;
+    }
+    {% endblock %}
+
+    # try_files $uri 404;
+  }
+  {% endblock %}
+}
