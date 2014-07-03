@@ -31,10 +31,10 @@ server {
         "Content-Length: 0"
       ;
       return 204;
+    try_files $uri $uri/ =404;
     }
     {% endblock %}
 
-    # try_files $uri 404;
   }
   {% endblock %}
 }
