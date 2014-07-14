@@ -4,10 +4,6 @@
     shared_dirs: []
     copied_dirs: [ "bower_components", "node_modules" ]
 
-# should be conditional - the app/scripts approach is not universal
-- stat: path="{{app_dir}}/deployments/{{name}}/setup/app/scripts"
-  register: appScriptsPath
-
 - stat: path="{{app_dir}}/deployments/{{name}}/setup/gruntfile.coffee"
   register: gruntfilePath
 
@@ -16,8 +12,11 @@
 
 - name: sliding_deploy_angular {{name}} - copy settings.coffee to scripts folder
   copy: src="files/{{settings_file}}"
-        dest="{{app_dir}}/deployments/{{name}}/setup/app/scripts/settings.coffee"
-  when: appScriptsPath.stat.isdir is defined and appScriptsPath.stat.isdir == true
+        dest="{{app_dir}}/deployments/{{name}}/setup/{{settings_dest|default('app/scripts/settings.coffee')}}"
+
+- name: sliding_deploy_angular {{name}} - remove old npm dependencies
+  command: npm prune --unsafe-perm
+           chdir="{{app_dir}}/deployments/{{name}}/setup"
 
 - name: sliding_deploy_angular {{name}} - install npm dependencies
   command: npm install --unsafe-perm
