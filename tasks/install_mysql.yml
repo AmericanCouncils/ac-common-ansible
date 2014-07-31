@@ -12,3 +12,6 @@
     service: mysql
     command: /usr/sbin/mysqld
     procname: mysqld
+
+- name: install mysql python library
+  apt: pkg=python-mysqldb
