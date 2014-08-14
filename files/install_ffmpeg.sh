@@ -32,11 +32,11 @@ make distclean
 
 ## x264
 cd ~/ffmpeg_sources
-git clone git://git.videolan.org/x264.git
-cd x264
-git checkout dfdb6465dea2990a4531d076ed2644c8ccb0f3a9
-./configure --prefix="$HOME/ffmpeg_build" --bindir="$HOME/bin" --enable-static
-make
+wget http://download.videolan.org/pub/x264/snapshots/x264-snapshot-20140813-2245-stable.tar.bz2
+tar xjvf x264-snapshot-20140813-2245-stable.tar.bz2
+cd x264-snapshot*
+PATH="$PATH:$HOME/bin" ./configure --prefix="$HOME/ffmpeg_build" --bindir="$HOME/bin" --enable-static --disable-opencl
+PATH="$PATH:$HOME/bin" make
 make install
 make distclean
 
