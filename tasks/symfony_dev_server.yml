@@ -4,6 +4,10 @@
   vars:
     port: 80
 
+- include: ferm_allow_global_port.yml
+  vars:
+    port: 81
+
 - include: init_symfony_app.yml
   # Passing through variable: dir
 
@@ -18,3 +22,11 @@
     root: "{{dir}}/web"
     symfony_devmode: true
     port: 80
+
+- include: nginx_app_config.yml
+  vars:
+    # Passing through variable: name
+    template: common/templates/symfony-dev-nginx.j2
+    root: "{{dir}}/web"
+    symfony_testmode: true
+    port: 81
