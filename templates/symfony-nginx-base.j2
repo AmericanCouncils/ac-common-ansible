@@ -43,6 +43,8 @@ server {
   location @symfony {
     {% if symfony_devmode|default(false) %}
       {% set phpscript = 'app_dev' %}
+    {% elif symfony_testmode|default(false) %}
+      {% set phpscript = 'app_test' %}
     {% else %}
       {% set phpscript = 'app' %}
     {% endif %}
