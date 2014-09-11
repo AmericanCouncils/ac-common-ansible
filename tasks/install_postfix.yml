@@ -1,0 +1,16 @@
+- name: install postfix package
+  apt: pkg=postfix
+
+- name: enable postfix
+  service: name=postfix enabled=yes
+
+- name: update postfix main.cf config
+  template: src=../templates/postfix.main.cf.j2
+            dest=/etc/postfix/main.cf
+            mode=0755
+  notify: reload postfix
+
+#ensure that postfix is started... TODO: use supervisor instead
+- name: start postfix
+  service: name=postfix state=started
+  

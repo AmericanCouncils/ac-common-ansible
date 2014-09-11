@@ -42,3 +42,6 @@
 
 - name: restart logstash
   supervisorctl: name=logstash state=restarted
+
+- name: reload postfix
+  service: name=postfix state=reloaded
