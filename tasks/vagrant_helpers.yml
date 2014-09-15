@@ -1,5 +1,8 @@
 - include: create_swapfile.yml
 
+- name: install python-keyczar
+  apt: pkg=python-keyczar
+
 - name: cd to /vagrant after login
   lineinfile: dest=/home/vagrant/.bashrc
               regexp="^cd /vagrant"
