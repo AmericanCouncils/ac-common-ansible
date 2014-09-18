@@ -11,6 +11,13 @@
 - include: init_symfony_app.yml
   # Passing through variable: dir
 
+- name: symfony_dev_server - reset ownership of the cache
+  file: path="/dev/shm/ac"
+        state=directory
+        recurse=yes
+        owner="{{name}}"
+        group="{{name}}"
+
 - include: symfony_app_user.yml
   vars:
     user: "{{name}}"
