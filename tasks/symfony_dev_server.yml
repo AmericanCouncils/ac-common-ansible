@@ -5,9 +5,7 @@
     port: 80
 
 - include: init_symfony_app.yml
-  vars:
-    # Passing through variable: dir
-    user: "{{name}}"
+  # Passing through variable: dir
 
 - name: symfony_dev_server - reset ownership of the cache
   file: path="/dev/shm/ac"
