@@ -10,6 +10,12 @@
             mode=0755
   notify: reload postfix
 
+- name: update postfix master.cf config
+  template: src=../templates/postfix.master.cf.j2
+            dest=/etc/postfix/master.cf
+            mode=0755
+  notify: reload postfix
+
 #ensure that postfix is started... TODO: use supervisor instead
 - name: start postfix
   service: name=postfix state=started
