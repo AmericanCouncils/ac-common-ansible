@@ -56,7 +56,7 @@
   apt: update_cache=yes
 
 - name: remove old apt packages (usually old linux kernel versions)
-  command: apt-get autoremove
+  command: apt-get autoremove -y
 
 - name: install ntp daemon
   apt: pkg=chrony
