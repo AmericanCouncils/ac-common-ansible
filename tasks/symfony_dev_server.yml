@@ -30,10 +30,13 @@
     symfony_devmode: true
     port: 80
 
-- include: nginx_app_config.yml
-  vars:
-    # Passing through variable: name
-    template: common/templates/symfony-dev-nginx.j2
-    root: "{{dir}}/web"
-    symfony_testmode: true
-    port: 81
+#WARNING: multiple includes of nginx_app_config overwrite each other currently
+#... needs some refactoring
+
+# - include: nginx_app_config.yml
+#   vars:
+#     # Passing through variable: name
+#     template: common/templates/symfony-dev-nginx.j2
+#     root: "{{dir}}/web"
+#     symfony_testmode: true
+#     port: 81
