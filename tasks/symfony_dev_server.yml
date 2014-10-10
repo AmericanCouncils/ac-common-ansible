@@ -2,11 +2,11 @@
 
 - include: ferm_allow_global_port.yml
   vars:
-    port: 80
+    port: "{{web_port|default(80)}}"
 
-- include: ferm_allow_global_port.yml
+- include: symfony_app_user.yml
   vars:
-    port: 81
+    user: "{{name}}"
 
 - include: init_symfony_app.yml
   # Passing through variable: dir
@@ -27,16 +27,6 @@
     # Passing through variable: name
     template: common/templates/symfony-dev-nginx.j2
     root: "{{dir}}/web"
-    symfony_devmode: true
-    port: 80
-
-#WARNING: multiple includes of nginx_app_config overwrite each other currently
-#... needs some refactoring
-
-# - include: nginx_app_config.yml
-#   vars:
-#     # Passing through variable: name
-#     template: common/templates/symfony-dev-nginx.j2
-#     root: "{{dir}}/web"
-#     symfony_testmode: true
-#     port: 81
+    symfony_devmode: "{{!test_env|default(true)}}"
+    symfony_testmode: "{{test_env|default(false)}}"
+    port: "{{web_port|default(80)}}"
