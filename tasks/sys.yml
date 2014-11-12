@@ -21,6 +21,11 @@
 - name: create lastlog file
   command: touch /var/log/lastlog creates=/var/log/lastlog
 
+- include: hosts_entry.yml
+  vars:
+    host: accounts.americancouncils.org
+    ip: 192.168.252.192
+
 - name: set shell prompt to show full hostname with production tag
   lineinfile: dest={{item}}
               regexp="^export PS1="
