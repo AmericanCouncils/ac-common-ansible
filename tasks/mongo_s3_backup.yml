@@ -1,0 +1,15 @@
+- include: install_nodejs.yml
+
+- name: install mongodb_s3_backup
+  command: npm install -g mongodb_s3_backup creates=/usr/bin/mongodb_s3_backup
+
+- name: create s3-mongo-backup config dir
+  file: path=/etc/s3-mongo-backup state=directory mode=0744
+
+- name: create config file for backups of mongo db {{database}}
+  template: src=../templates/s3-mongo-backup-config.json.j2
+            dest=/etc/s3-mongo-backup/{{database}}-backup.json
+
+- name: create cron job to perform backups of mongo db {{database}}
+  template: src=../templates/s3-mongo-backup.cron.j2
+            dest=/etc/cron.d/s3-mongo-backup-{{database}}

@@ -1,0 +1,15 @@
+{
+  "mongodb": {
+    "host": "localhost",
+    "port": 27017,
+    "username": false,
+    "password": false,
+    "db": "{{database}}"
+  },
+  "s3": {
+    "bucket": "{{backups_s3_bucket}}",
+    "key": "{{backups_s3_key}}",
+    "secret": "{{backups_s3_secret}}",
+    "destination": "{{inventory_hostname}}/mongo/{{database}}"
+  }
+}
