@@ -1,2 +1,2 @@
 - name: install compass gem
-  gem: name=compass state=present
+  gem: name=compass state=present user_install=no
