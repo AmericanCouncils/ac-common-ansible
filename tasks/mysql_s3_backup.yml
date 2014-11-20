@@ -1,0 +1,18 @@
+- include: install_ruby.yml
+
+- name: install s3-mysql-backup gem
+  gem: name=s3-mysql-backup state=present user_install=no
+
+- name: create s3-mysql-backup config dir
+  file: path=/etc/s3-mysql-backup state=directory mode=0744
+
+- name: create local backups directory
+  file: path=/var/s3-mysql-backup/{{database}} state=directory recurse=yes mode=0700
+
+- name: create config file for backups of mysql db {{database}}
+  template: src=../templates/s3-mysql-backup-config.yml.j2
+            dest=/etc/s3-mysql-backup/{{database}}-backup.yml
+
+- name: create cron job to perform backups of mysql db {{database}}
+  template: src=../templates/s3-mysql-backup.cron.j2
+            dest=/etc/cron.d/s3-mysql-backup-{{database}}
