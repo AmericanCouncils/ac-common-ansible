@@ -1,0 +1,6 @@
+- name: local port rule {{name}} - allow connections on UDP port {{port}} from {{src}}
+  tags: firewall
+  template: src=../templates/ferm_allow_local_udp_port.conf.j2
+            dest=/etc/ferm/ferm.d/{{name}}-udp.conf
+  notify:
+    - reload firewall
