@@ -1,3 +1,10 @@
+- name: detect if we are in a docker container
+  stat: path=/etc/dockerized
+  register: dockerized_file
+
+- set_fact:
+    dockerized: "{{dockerized_file.stat.exists}}"
+
 - name: generate locale
   command: locale-gen en_US.UTF-8 creates=/var/lib/locales/supported.d/local
 
@@ -20,11 +27,6 @@
 
 - name: create lastlog file
   command: touch /var/log/lastlog creates=/var/log/lastlog
-
-- include: hosts_entry.yml
-  vars:
-    host: accounts.americancouncils.org
-    ip: 192.168.252.192
 
 - name: set shell prompt to show full hostname with production tag
   lineinfile: dest={{item}}
@@ -63,6 +65,23 @@
 - name: remove old apt packages (usually old linux kernel versions)
   command: apt-get autoremove -y
 
+- name: install dnsmasq
+  apt: pkg=dnsmasq
+
+- name: configure dnsmasq
+  copy: src=../files/dnsmasq.conf
+        dest=/etc/dnsmasq.conf
+        mode=0644
+        owner=root
+        group=root
+  notify:
+    - restart dnsmasq
+
+- include: hosts_extra_entry.yml
+  vars:
+    host: accounts.americancouncils.org
+    ip: 192.168.252.192
+
 - name: install ntp daemon
   apt: pkg=chrony
   notify:
@@ -76,6 +95,9 @@
         group=root
   notify:
     - restart chrony
+
+- name: install curl
+  apt: pkg=curl
 
 - name: install pycurl
   apt: pkg=python-pycurl
@@ -95,14 +117,22 @@
 - name: remove rsyslog
   apt: pkg=rsyslog state=absent
 
-- name: install syslog-ng
-  apt: pkg=syslog-ng state=present
+- name: disable security capabilities of syslog-ng
+  copy: src=../files/default-syslog-ng
+        dest=/etc/default/syslog-ng
+  when: dockerized
+
+- name: create syslog-ng conf directory
+  file: path=/etc/syslog-ng state=directory
 
 - name: set up syslog-ng config
-  copy: src=../files/syslog-ng.conf
-        dest=/etc/syslog-ng/syslog-ng.conf
+  template: src=../templates/syslog-ng.conf.j2
+            dest=/etc/syslog-ng/syslog-ng.conf
   notify:
     - reload syslog-ng
+
+- name: install syslog-ng
+  apt: pkg=syslog-ng state=present
 
 - name: set a cron job to clear out old log files
   copy: src=../files/logclean.cron
@@ -117,6 +147,7 @@
 - name: remove consolekit
   apt: pkg=consolekit state=absent
 
+# TODO: Prevent this from installing the default ferm rules, perhaps with policy-rc.d?
 - name: install ferm
   tags: firewall
   apt: pkg=ferm

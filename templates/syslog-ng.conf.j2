@@ -12,7 +12,12 @@ options { create_dirs(yes); flush_lines(10); flush_timeout(1000);
 ########################
 
 source s_syslog {
-	system();
+  {% if dockerized %}
+    unix-dgram("/dev/log");
+  {% else %}
+    system();
+  {% endif %}
+
 	internal();
 
 	# This works around issues with nginx supplying the hostname as program name

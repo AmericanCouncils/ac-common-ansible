@@ -1,3 +1,0 @@
-- name: set local DNS for {{host}} to {{ip}}
-  lineinfile: dest=/etc/hosts regexp=" {{host}}$" line="{{ip}} {{host}}"
-  tags: dns
