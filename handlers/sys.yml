@@ -2,7 +2,7 @@
   command: /usr/sbin/dpkg-reconfigure --frontend noninteractive tzdata
 
 - name: reload firewall
-  service: name=ferm state=reloaded
+  command: /etc/init.d/ferm reload
 
 - name: reload supervisor
   service: name=supervisor state=reloaded
@@ -46,5 +46,6 @@
 - name: restart logstash
   supervisorctl: name=logstash state=restarted
 
+# TODO: use supervisor instead
 - name: reload postfix
   service: name=postfix state=reloaded
