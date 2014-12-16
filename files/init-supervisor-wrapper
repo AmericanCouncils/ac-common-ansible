@@ -16,8 +16,12 @@ case "$1" in
     echo "Running: supervisorctl restart $SERVICE"
     /usr/local/bin/supervisorctl restart $SERVICE
     ;;
+  status:
+    echo "Running: supervisorctl status $SERVICE"
+    /usr/local/bin/supervisorctl status $SERVICE
+    ;;
   *)
-    echo "Usage: $SCRIPTNAME {start|stop|restart|force-reload}" >@2
+    echo "Usage: $SCRIPTNAME {start|stop|restart|force-reload|status}" >@2
     exit 3
     ;;
 esac

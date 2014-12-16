@@ -5,6 +5,18 @@
 - set_fact:
     dockerized: "{{dockerized_file.stat.exists}}"
 
+- name: install dnsmasq
+  apt: pkg=dnsmasq
+
+- name: configure dnsmasq
+  copy: src=../files/dnsmasq.conf
+        dest=/etc/dnsmasq.conf
+        mode=0644
+        owner=root
+        group=root
+  notify:
+    - restart dnsmasq
+
 - name: generate locale
   command: locale-gen en_US.UTF-8 creates=/var/lib/locales/supported.d/local
 
@@ -65,17 +77,9 @@
 - name: remove old apt packages (usually old linux kernel versions)
   command: apt-get autoremove -y
 
-- name: install dnsmasq
-  apt: pkg=dnsmasq
-
-- name: configure dnsmasq
-  copy: src=../files/dnsmasq.conf
-        dest=/etc/dnsmasq.conf
-        mode=0644
-        owner=root
-        group=root
-  notify:
-    - restart dnsmasq
+- name: remove puppet-generated resolvconf config
+  file: path=/var/run/resolvconf/interface/original.resolvconf state=absent
+  when: dockerized
 
 - include: hosts_extra_entry.yml
   vars:
@@ -86,6 +90,7 @@
   apt: pkg=chrony
   notify:
     - restart chrony
+  when: "not {{dockerized}}"
 
 - name: configure ntp daemon
   copy: src=../files/chrony.conf
@@ -95,6 +100,7 @@
         group=root
   notify:
     - restart chrony
+  when: "not {{dockerized}}"
 
 - name: install curl
   apt: pkg=curl
@@ -121,6 +127,23 @@
   copy: src=../files/default-syslog-ng
         dest=/etc/default/syslog-ng
   when: dockerized
+
+- name: get rid of old log files and directories
+  file: path=/var/log/{{item}} state=absent
+  with_items:
+    - auth.log
+    - cron.log
+    - daemon.log
+    - dmesg
+    - error
+    - messages
+    - mysql
+    - mysql.err
+    - mysql.log
+    - redis
+    - samba
+    - syslog
+    - user.log
 
 - name: create syslog-ng conf directory
   file: path=/etc/syslog-ng state=directory
@@ -208,8 +231,19 @@
 - name: create upstart configuration for supervisor
   copy: src=../files/supervisor-upstart.conf
         dest=/etc/init/supervisor.conf
+  when: "not {{dockerized}}"
   notify:
     - hard restart supervisor
+
+- name: create runit service directories for supervisor
+  file: path=/etc/service/supervisor/supervise state=directory mode=0700 owner=root group=root
+  when: dockerized
+
+- name: set supervisor under runit control
+  copy: src=../files/supervisor-runit.sh
+        dest=/etc/service/supervisor/run
+        mode=0500
+  when: dockerized
 
 - name: link init.d/supervisor to upstart-job
   file: src=/lib/init/upstart-job
@@ -234,3 +268,10 @@
         dest=/etc/supervisor.d/twiddler.conf
   notify:
     - hard restart supervisor
+
+- name: start supervisor under runit
+  command: sv start supervisor
+  when: dockerized
+
+- name: flush ansible handlers
+  meta: flush_handlers

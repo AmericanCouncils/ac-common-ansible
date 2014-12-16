@@ -16,7 +16,6 @@
             mode=0755
   notify: reload postfix
 
-#ensure that postfix is started... TODO: use supervisor instead
+# TODO: use supervisor instead
 - name: start postfix
   service: name=postfix state=started
-  
