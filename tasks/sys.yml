@@ -108,6 +108,9 @@
 - name: install pycurl
   apt: pkg=python-pycurl
 
+- name: install python mysql library
+  apt: pkg=python-mysqldb
+
 - name: access modern git repository
   apt_repository: repo=ppa:git-core/ppa
 
