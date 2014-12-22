@@ -17,6 +17,16 @@
   notify:
     - restart dnsmasq
 
+- name: create runit service directories for dnsmasq
+  file: path=/etc/service/dnsmasq/supervise state=directory mode=0700 owner=root group=root
+  when: dockerized
+
+- name: set dnsmasq under runit control
+  copy: src=../files/dnsmasq-runit.sh
+        dest=/etc/service/dnsmasq/run
+        mode=0500
+  when: dockerized
+
 - name: generate locale
   command: locale-gen en_US.UTF-8 creates=/var/lib/locales/supported.d/local
 
