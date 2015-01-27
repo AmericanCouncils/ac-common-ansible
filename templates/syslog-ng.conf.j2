@@ -2,9 +2,9 @@
 @include "scl.conf"
 
 options { create_dirs(yes); flush_lines(10); flush_timeout(1000);
-	keep_timestamp(no); use_dns(no); use_fqdn(yes);
-	owner("root"); group("adm"); perm(0644); dir_perm(0755);
-	log_msg_size(65536); frac_digits(3); time_reopen(10);
+  keep_timestamp(no); use_dns(no); use_fqdn(yes);
+  owner("root"); group("adm"); perm(0644); dir_perm(0755);
+  log_msg_size(65536); frac_digits(3); time_reopen(10);
 };
 
 ########################
@@ -18,10 +18,12 @@ source s_syslog {
     system();
   {% endif %}
 
-	internal();
+  network(transport("udp"));
 
-	# This works around issues with nginx supplying the hostname as program name
-	unix-dgram("/var/run/nginx-log.sock" program_override("nginx") owner("www-data") perm(0600));
+  internal();
+
+  # This works around issues with nginx supplying the hostname as program name
+  unix-dgram("/var/run/nginx-log.sock" program_override("nginx") owner("www-data") perm(0600));
 };
 
 ########################
@@ -32,19 +34,19 @@ source s_syslog {
 @define appdir "/var/log/app"
 
 block destination default_file_settings(path()) {
-	file("`path`"
-	template("${YEAR}-${MONTH}-${DAY} ${HOUR}:${MIN}:${SEC} ${PROGRAM}[${PID}] ${PRIORITY}: $(indent-multi-line ${MSG})\n")
-	);
+  file("`path`"
+  template("${YEAR}-${MONTH}-${DAY} ${HOUR}:${MIN}:${SEC} ${PROGRAM}[${PID}] ${PRIORITY}: $(indent-multi-line ${MSG})\n")
+  );
 };
 
 destination d_sys {
-	default_file_settings(path("`sysdir`/${PROGRAM:-unknown}-${YEAR}.${MONTH}.${DAY}.log"));
-	default_file_settings(path("`sysdir`/ALL-${YEAR}.${MONTH}.${DAY}.log"));
+  default_file_settings(path("`sysdir`/${PROGRAM:-unknown}-${YEAR}.${MONTH}.${DAY}.log"));
+  default_file_settings(path("`sysdir`/ALL-${YEAR}.${MONTH}.${DAY}.log"));
 };
 
 destination d_app {
-	default_file_settings(path("`appdir`/${PROGRAM:-unknown}-${YEAR}.${MONTH}.${DAY}.log"));
-	default_file_settings(path("`appdir`/ALL-${YEAR}.${MONTH}.${DAY}.log"));
+  default_file_settings(path("`appdir`/${PROGRAM:-unknown}-${YEAR}.${MONTH}.${DAY}.log"));
+  default_file_settings(path("`appdir`/ALL-${YEAR}.${MONTH}.${DAY}.log"));
 };
 
 ########################
@@ -59,23 +61,23 @@ filter f_sys { not filter(f_app); };
 ########################
 
 rewrite r_fix_program_name {
-	# Convert "/var/foo/prog" into just "prog"
-	subst('^.+/([^/]+)$', "$1", value("PROGRAM") type("pcre") flags("unicode" "store-matches"));
+  # Convert "/var/foo/prog" into just "prog"
+  subst('^.+/([^/]+)$', "$1", value("PROGRAM") type("pcre") flags("unicode" "store-matches"));
 
-	# Lowercase all program names
-	set("$(lowercase $PROGRAM)", value("PROGRAM"));
+  # Lowercase all program names
+  set("$(lowercase $PROGRAM)", value("PROGRAM"));
 
-	# For some reason messages from the php-fpm pool processes come in tagged 'ool'
-	set("php-fpm", value("PROGRAM") condition(program("ool" type(string))));
+  # For some reason messages from the php-fpm pool processes come in tagged 'ool'
+  set("php-fpm", value("PROGRAM") condition(program("ool" type(string))));
 
-	# Ansible emits lots of messages under various names like "ansible-apt"
-	set("[${PROGRAM}] $MESSAGE", value("MESSAGE") condition(program("ansible-*" type(glob))));
-	set("ansible", value("PROGRAM") condition(program("ansible-*" type(glob))));
+  # Ansible emits lots of messages under various names like "ansible-apt"
+  set("[${PROGRAM}] $MESSAGE", value("MESSAGE") condition(program("ansible-*" type(glob))));
+  set("ansible", value("PROGRAM") condition(program("ansible-*" type(glob))));
 };
 
 rewrite r_prefix_supervisor_stdout {
-	set("STDOUT: $MSG", value("MSG") condition(facility("local1") and priority("info")));
-	set("STDERR: $MSG", value("MSG") condition(facility("local1") and priority("notice")));
+  set("STDOUT: $MSG", value("MSG") condition(facility("local1") and priority("info")));
+  set("STDERR: $MSG", value("MSG") condition(facility("local1") and priority("notice")));
 };
 
 ########################
@@ -83,18 +85,18 @@ rewrite r_prefix_supervisor_stdout {
 ########################
 
 log {
-	source(s_syslog);
-	filter(f_app);
-	rewrite(r_fix_program_name);
-	destination(d_app);
+  source(s_syslog);
+  filter(f_app);
+  rewrite(r_fix_program_name);
+  destination(d_app);
 };
 
 log {
-	source(s_syslog);
-	filter(f_sys);
-	rewrite(r_fix_program_name);
-	rewrite(r_prefix_supervisor_stdout);
-	destination(d_sys);
+  source(s_syslog);
+  filter(f_sys);
+  rewrite(r_fix_program_name);
+  rewrite(r_prefix_supervisor_stdout);
+  destination(d_sys);
 };
 
 ###
