@@ -16,7 +16,7 @@ case "$1" in
     echo "Running: supervisorctl restart $SERVICE"
     /usr/local/bin/supervisorctl restart $SERVICE
     ;;
-  status:
+  status)
     echo "Running: supervisorctl status $SERVICE"
     /usr/local/bin/supervisorctl status $SERVICE
     ;;
