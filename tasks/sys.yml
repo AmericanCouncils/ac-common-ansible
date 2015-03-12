@@ -226,7 +226,7 @@
   when: old_tmp_src.changed
 
 - name: install supervisor with full syslog support
-  command: pip install "git+http://github.com/samv/supervisor.git@5a2b85e609#egg=supervisor"
+  command: pip install "git+http://github.com/samv/supervisor.git@afe739a66b202643192841f79f183c650fa47f0c#egg=supervisor"
            creates=/usr/local/lib/python2.7/dist-packages/supervisor/supervisord.py
   notify:
     - hard restart supervisor
