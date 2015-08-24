@@ -1,0 +1,36 @@
+#!/bin/sh
+
+set -ue
+
+SERVICE=$(basename $0)
+
+call_sv () {
+  echo "Running: sv $1 $SERVICE"
+  # Regex works around ansible service module not knowing "down" is a keyword for stopped service
+  /usr/bin/sv $1 $SERVICE 2>&1 | sed -e 's/^down/STOPPED down/'
+}
+
+case "$1" in
+  start)
+    call_sv "start"
+    ;;
+  stop)
+    call_sv "stop"
+    ;;
+  restart)
+    call_sv "restart"
+    ;;
+  reload)
+    call_sv "reload"
+    ;;
+  force-reload)
+    call_sv "force-reload"
+    ;;
+  status)
+    call_sv "status"
+    ;;
+  *)
+    echo "Usage: $SCRIPTNAME {start|stop|restart|reload|force-reload|status}" >@2
+    exit 3
+    ;;
+esac

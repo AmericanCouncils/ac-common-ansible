@@ -5,6 +5,14 @@
 - set_fact:
     dockerized: "{{dockerized_file.stat.exists}}"
 
+- name: install init-runit-wrapper
+  copy: src=../files/init-runit-wrapper
+        dest=/sbin/init-runit-wrapper
+        mode=0755
+        owner=root
+        group=root
+  when: dockerized
+
 - name: install dnsmasq
   apt: pkg=dnsmasq
 
@@ -25,6 +33,13 @@
   copy: src=../files/dnsmasq-runit.sh
         dest=/etc/service/dnsmasq/run
         mode=0500
+  when: dockerized
+
+- name: link old-style dnsmasq init script to runit wrapper
+  file: src=/sbin/init-runit-wrapper
+        dest=/etc/init.d/dnsmasq
+        state=link
+        force=yes
   when: dockerized
 
 - name: generate locale
@@ -112,26 +127,29 @@
     - restart chrony
   when: "not {{dockerized}}"
 
-- name: install curl
-  apt: pkg=curl
-
-- name: install pycurl
-  apt: pkg=python-pycurl
-
-- name: install python mysql library
-  apt: pkg=python-mysqldb
+- name: install basic utilities and python libraries
+  apt: pkg={{item}}
+  with_items:
+    - curl
+    - python-pip
+    - python-setuptools-git
+    - python-pycurl
+    - python-mysqldb
+    - dnsutils
+    - file
+    - info
+    - lsof
+    - man-db
+    - mime-support
+    - psmisc
+    - time
+    - wget
 
 - name: access modern git repository
   apt_repository: repo=ppa:git-core/ppa
 
 - name: install git
   apt: pkg=git
-
-- name: install pip
-  apt: pkg=python-pip
-
-- name: install git setuptools
-  apt: pkg=python-setuptools-git
 
 - name: remove rsyslog
   apt: pkg=rsyslog state=absent
@@ -140,6 +158,35 @@
   copy: src=../files/default-syslog-ng
         dest=/etc/default/syslog-ng
   when: dockerized
+
+- name: create syslog-ng conf directory
+  file: path=/etc/syslog-ng state=directory
+
+- name: set up syslog-ng config
+  template: src=../templates/syslog-ng.conf.j2
+            dest=/etc/syslog-ng/syslog-ng.conf
+  notify:
+    - reload syslog-ng
+
+- name: install syslog-ng
+  apt: pkg=syslog-ng state=present
+
+- name: link old-style syslog-ng init script to runit wrapper
+  file: src=/sbin/init-runit-wrapper
+        dest=/etc/init.d/syslog-ng
+        state=link
+        force=yes
+  when: dockerized
+
+- name: set a cron job to clear out old log files
+  copy: src=../files/logclean.cron
+        dest=/etc/cron.d/logclean
+        mode=0444
+        owner=root
+        group=root
+
+- name: flush ansible handlers
+  meta: flush_handlers
 
 - name: get rid of old log files and directories
   file: path=/var/log/{{item}} state=absent
@@ -158,25 +205,6 @@
     - syslog
     - user.log
 
-- name: create syslog-ng conf directory
-  file: path=/etc/syslog-ng state=directory
-
-- name: set up syslog-ng config
-  template: src=../templates/syslog-ng.conf.j2
-            dest=/etc/syslog-ng/syslog-ng.conf
-  notify:
-    - reload syslog-ng
-
-- name: install syslog-ng
-  apt: pkg=syslog-ng state=present
-
-- name: set a cron job to clear out old log files
-  copy: src=../files/logclean.cron
-        dest=/etc/cron.d/logclean
-        mode=0444
-        owner=root
-        group=root
-
 - name: remove landscape
   apt: pkg=landscape-common state=absent
 
@@ -189,6 +217,7 @@
   apt: pkg=ferm
   notify:
     - reload firewall
+  when: "not {{dockerized}}"
 
 - name: configure default ferm firewall rules
   tags: firewall
@@ -196,12 +225,14 @@
         dest=/etc/ferm/ferm.conf
   notify:
     - reload firewall
+  when: "not {{dockerized}}"
 
 - name: create ferm.d conf directory
   tags: firewall
   file: path=/etc/ferm/ferm.d state=directory
   notify:
     - reload firewall
+  when: "not {{dockerized}}"
 
 # TODO: Remove these after all our machines no longer have this old package
 - name: uninstall supervisor apt package
@@ -248,6 +279,13 @@
   notify:
     - hard restart supervisor
 
+- name: link init.d/supervisor to upstart-job
+  file: src=/lib/init/upstart-job
+        dest=/etc/init.d/supervisor
+        state=link
+        force=yes
+  when: "not {{dockerized}}"
+
 - name: create runit service directories for supervisor
   file: path=/etc/service/supervisor/supervise state=directory mode=0700 owner=root group=root
   when: dockerized
@@ -258,11 +296,12 @@
         mode=0500
   when: dockerized
 
-- name: link init.d/supervisor to upstart-job
-  file: src=/lib/init/upstart-job
+- name: link old-style supervisor init script to runit wrapper
+  file: src=/sbin/init-runit-wrapper
         dest=/etc/init.d/supervisor
         state=link
         force=yes
+  when: dockerized
 
 - name: install supervisor config file
   copy: src=../files/supervisord.conf
@@ -281,10 +320,6 @@
         dest=/etc/supervisor.d/twiddler.conf
   notify:
     - hard restart supervisor
-
-- name: start supervisor under runit
-  command: sv start supervisor
-  when: dockerized
 
 - name: flush ansible handlers
   meta: flush_handlers

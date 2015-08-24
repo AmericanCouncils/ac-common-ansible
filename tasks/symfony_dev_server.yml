@@ -3,6 +3,7 @@
 - include: ferm_allow_global_port.yml
   vars:
     port: "{{web_port|default(80)}}"
+  when: "not {{dockerized}}"
 
 - include: symfony_app_user.yml
   vars:

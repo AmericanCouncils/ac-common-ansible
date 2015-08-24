@@ -34,3 +34,6 @@
             dest=/etc/supervisor.d/{{service}}-supervisor.conf
   notify:
     - reload supervisor
+
+- name: flush ansible handlers
+  meta: flush_handlers
