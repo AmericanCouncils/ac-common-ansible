@@ -234,30 +234,8 @@
     - reload firewall
   when: "not {{dockerized}}"
 
-# TODO: Remove these after all our machines no longer have this old package
-- name: uninstall supervisor apt package
-  apt: pkg=supervisor state=absent
-  notify:
-    - hard restart supervisor
-- name: delete old supervisor conf directory
-  file: path=/etc/supervisor/ state=absent
-  notify:
-    - hard restart supervisor
-- name: delete old supervisor egg link
-  file: path=/usr/local/lib/python2.7/dist-packages/supervisor.egg-link state=absent
-  notify:
-    - hard restart supervisor
-- name: delete old supervisor temp src directory
-  file: path=/tmp/src/supervisor state=absent
-  register: old_tmp_src
-  notify:
-    - hard restart supervisor
-- name: uninstall old supervisor pip package
-  command: pip uninstall -y supervisor
-  when: old_tmp_src.changed
-
-- name: install supervisor with full syslog support
-  command: pip install "git+http://github.com/samv/supervisor.git@afe739a66b202643192841f79f183c650fa47f0c#egg=supervisor"
+- name: install supervisor 4.0-dev
+  command: pip install "git+http://github.com/Supervisor/supervisor.git@304b4f388d3e3fb82090235b92efa6e154ec6f75#egg=supervisor"
            creates=/usr/local/lib/python2.7/dist-packages/supervisor/supervisord.py
   notify:
     - hard restart supervisor

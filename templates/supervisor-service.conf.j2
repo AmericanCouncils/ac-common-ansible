@@ -1,8 +1,8 @@
 [program:{{service}}]
 command={{command}}
 autorestart=true
-stdout_syslog=local1.info
-stderr_syslog=local1.notice
+stdout_syslog=true
+stderr_syslog=true
 startsecs={{start_secs|default('2')}}
 {% if daemon_environment is defined %}
 environment={{daemon_environment}}
