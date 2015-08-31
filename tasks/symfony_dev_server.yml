@@ -10,6 +10,16 @@
     user: vagrant
     poolname: "{{name}}"
 
+- name: set composer vendor dir environment variable
+  lineinfile: dest=/home/vagrant/.bashrc
+              regexp="^export COMPOSER_VENDOR_DIR="
+              line="export COMPOSER_VENDOR_DIR=/home/vagrant/vendor"
+
+- name: set composer bin dir environment variable
+  lineinfile: dest=/home/vagrant/.bashrc
+              regexp="^export COMPOSER_BIN_DIR="
+              line="export COMPOSER_BIN_DIR=/home/vagrant/bin"
+
 - include: init_symfony_app.yml
   # Passing through variable: dir
 
