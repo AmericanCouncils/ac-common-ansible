@@ -1,0 +1,24 @@
+- name: access rvm ppa
+  apt_repository: repo=ppa:rael-gc/rvm
+                  update_cache=yes
+
+- name: install rvm
+  apt: pkg=rvm
+
+# Enable rvm for root, needs to source /etc/profile.d/rvm.sh
+
+- name: install mri-2.3 with rvm
+  command: rvm install ruby2.3
+
+- name: install libxml2-dev
+  apt: pkg=libxml2-dev
+
+- name: install libsqlite3-dev
+  apt: pkg=libsqlite3-dev
+
+- name: install libmysqlclient-dev
+  apt: pkg=libmysqlclient-dev
+
+- name: install bundler gem
+  command: gem install bundler
+           creates=/usr/local/bin/bundler
