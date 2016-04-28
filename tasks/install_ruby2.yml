@@ -1,0 +1,11 @@
+- name: add apt repository for ruby 2.3
+  apt_repository: repo=ppa:brightbox/ruby-ng
+
+- name: install ruby 2
+  apt: pkg=ruby2.3
+
+- name: install ruby 2 dev
+  apt: pkg=ruby2.3-dev
+
+- name: install bundler gem
+  gem: bundler state=present user_install=no
