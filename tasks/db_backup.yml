@@ -1,0 +1,23 @@
+- name: install s3cmd python package
+  pip: name=s3cmd
+
+- name: create config file for s3cmd
+  template: src=../templates/s3cmd-conf.j2
+            dest=/etc/s3cmd-conf
+            mode=0600
+            owner=root
+            group=root
+
+- name: install rotate-backups python package
+  pip: name=rotate-backups
+
+- name: create local backups directory
+  file: path=/var/{{mode}}-backup/{{database}} state=directory recurse=yes mode=0700
+
+- name: install db-backup script
+  copy: src=../files/db-backup.sh
+        dest=/usr/local/bin/db-backup.sh
+
+- name: create cron job to perform backups of {{mode}} db {{database}}
+  template: src=../templates/db-backup.cron.j2
+            dest=/etc/cron.d/db-backup-{{database}}

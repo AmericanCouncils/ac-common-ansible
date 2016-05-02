@@ -1,0 +1,19 @@
+- name: sliding_deploy_rails {{name}} - setup supervisor config for unicorn
+  template: src=../templates/unicorn-supervisor-service.conf.j2
+            dest=/etc/supervisor.d/{{name}}-unicorn-supervisor.conf
+  notify:
+    - reload supervisor
+
+- include: sliding_deploy_pull.yml
+  # Passing through: app_dir, name, user, git_url, version, shared_dirs
+  #
+- name: sliding_deploy_rails {{name}} - install gems
+  command: bundle install --without="development test profile"
+           chdir="{{app_dir}}/deployments/{{name}}/setup"
+
+- include: sliding_deploy_apply.yml
+  # Passing through vars: app_dir, name
+
+- name: sliding_deploy_rails {{name}} -- stop unicorn (supervisor will restart it)
+  command: pkill --signal QUIT -u {{user}} -f 'unicorn master'
+  ignore_errors: true

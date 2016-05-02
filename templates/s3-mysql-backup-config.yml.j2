@@ -1,9 +1,0 @@
-backup_dir: /var/s3-mysql-backup/{{database}}
-remote_dir: {{inventory_hostname}}/mysql/{{database}}
-
-s3_bucket: {{backups_s3_bucket}}
-s3_access_key_id: {{backups_s3_key}}
-s3_secret_access_key: {{backups_s3_secret}}
-
-dump_user: root
-dump_pass: ""

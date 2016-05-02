@@ -8,4 +8,4 @@
   apt: pkg=ruby2.3-dev
 
 - name: install bundler gem
-  gem: bundler state=present user_install=no
+  gem: name=bundler state=present user_install=no

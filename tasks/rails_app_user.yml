@@ -1,0 +1,7 @@
+- name: rails_app_user {{user}} - create app user
+  user: name={{user}} groups=www-data shell=/bin/bash
+
+- name: rails_app_user {{user}} - set environment variable RAILS_ENV to production
+  lineinfile: dest="/home/{{user}}/.bashrc"
+              regexp="^export RAILS_ENV="
+              line="export RAILS_ENV=production"

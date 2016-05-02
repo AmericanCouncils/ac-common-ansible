@@ -1,0 +1,8 @@
+[program:{{name}}-unicorn]
+directory={{app_dir}}/{{name}}
+command={{app_dir}}/{{name}}/bin/bundle exec unicorn -c config/unicorn.rb
+user={{user}}
+autorestart=true
+stdout_syslog=true
+stderr_syslog=true
+environment={{rails_env_vars}}

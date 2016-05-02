@@ -21,6 +21,11 @@
 - name: sliding_deploy_angular {{name}} - install npm dependencies
   command: npm install --unsafe-perm
            chdir="{{app_dir}}/deployments/{{name}}/setup"
+  ignore_errors: yes
+
+- name: sliding_deploy_angular {{name}} - install npm dependencies 2nd attempt
+  command: npm install --unsafe-perm
+           chdir="{{app_dir}}/deployments/{{name}}/setup"
 
 - name: sliding_deploy_angular {{name}} - install bower dependencies
   command: bower install --dev --allow-root
@@ -32,7 +37,7 @@
   when: gruntfilePath.stat.exists == true
 
 - name: sliding_deploy_angular {{name}} - build dist with gulp
-  command: gulp build
+  command: ./node_modules/gulp/bin/gulp.js build
            chdir="{{app_dir}}/deployments/{{name}}/setup"
   when: gulpfilePath.stat.exists == true
 
