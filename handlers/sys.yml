@@ -35,7 +35,7 @@
   supervisorctl: name=rabbitmq-server state=restarted
 
 - name: restart redis
-  supervisorctl: name=redis state=restarted
+  supervisorctl: name=redis-default state=restarted
 
 - name: restart mongodb
   supervisorctl: name=mongodb state=restarted

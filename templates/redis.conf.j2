@@ -1,0 +1,44 @@
+daemonize no
+port {{port|default(6379)}}
+bind 127.0.0.1
+
+timeout 0
+
+loglevel notice
+syslog-enabled yes
+syslog-ident {{redis_name|default('redis')}}
+
+databases 16
+
+save 900 1
+save 300 10
+save 60 10000
+
+stop-writes-on-bgsave-error yes
+rdbcompression yes
+rdbchecksum yes
+dbfilename {{redis_name|default('dump')}}.rdb
+
+dir /var/lib/redis
+
+maxmemory {{memory_limit|default('32Mb')}}
+maxmemory-policy {{eviction_policy|default('noeviction')}}
+maxmemory-samples 5
+
+appendonly no
+
+slowlog-log-slower-than 10000
+slowlog-max-len 128
+
+hash-max-ziplist-entries 512
+hash-max-ziplist-value 64
+
+list-max-ziplist-entries 512
+list-max-ziplist-value 64
+
+set-max-intset-entries 512
+
+zset-max-ziplist-entries 128
+zset-max-ziplist-value 64
+
+activerehashing yes
