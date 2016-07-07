@@ -2,7 +2,7 @@
   vars:
     # Passing through: name, user, git_url, version
     shared_dirs: []
-    copied_dirs: [ "bower_components", "node_modules" ]
+    copied_dirs: [ "node_modules" ]
 
 - stat: path="{{app_dir}}/deployments/{{name}}/setup/gruntfile.coffee"
   register: gruntfilePath
@@ -28,7 +28,7 @@
            chdir="{{app_dir}}/deployments/{{name}}/setup"
 
 - name: sliding_deploy_angular {{name}} - install bower dependencies
-  command: bower install --dev --allow-root
+  command: ./node_modules/bower/bin/bower install --dev --allow-root
            chdir="{{app_dir}}/deployments/{{name}}/setup"
 
 - name: sliding_deploy_angular {{name}} - build dist with grunt
