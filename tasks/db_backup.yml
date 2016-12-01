@@ -1,9 +1,9 @@
-- name: install s3cmd python package
-  pip: name=s3cmd
+- name: install s3 python package
+  pip: name=s3
 
-- name: create config file for s3cmd
-  template: src=../templates/s3cmd-conf.j2
-            dest=/etc/s3cmd-conf
+- name: create config file for s3
+  template: src=../templates/s3.yaml.j2
+            dest=/etc/s3.yaml
             mode=0600
             owner=root
             group=root

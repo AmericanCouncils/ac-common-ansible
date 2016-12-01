@@ -36,7 +36,7 @@ case "$MODE" in
 esac
 
 echo "Transferring $BACKUP_FILE to S3"
-s3cmd -c /etc/s3cmd-conf put $BACKUP_FILE s3://american-councils-backups/$HOSTNAME/$MODE/$DBNAME/$YEAR/$MONTH/
+s3 -c /etc/s3.yaml -b american-councils-backups put $BACKUP_FILE $HOSTNAME/$MODE/$DBNAME/$YEAR/$MONTH/$BACKUP_NAME.sql.gz
 
 echo "Rotating local $MODE $DBNAME backups"
 rotate-backups -d 30 -w 16 $BACKUP_DIR
