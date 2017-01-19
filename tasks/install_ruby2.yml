@@ -1,3 +1,9 @@
+- name: install build-essential for building native ruby gems
+  apt: pkg=build-essential
+
+- name: install cmake for building native ruby gems
+  apt: pkg=cmake
+
 - name: add apt repository for ruby 2.3
   apt_repository: repo=ppa:brightbox/ruby-ng
 
