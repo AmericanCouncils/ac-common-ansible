@@ -18,6 +18,10 @@
 - include: sliding_deploy_apply.yml
   # Passing through vars: app_dir, name
 
+- name: sliding_deploy_rails {{name}} - gracefully stop resque (supervisor will restart it)
+  command: pkill --signal QUIT -u {{user}} -f 'resque'
+  ignore_errors: true
+
 - name: sliding_deploy_rails {{name}} - stop unicorn (supervisor will restart it)
   command: pkill --signal QUIT -u {{user}} -f 'unicorn master'
   ignore_errors: true
