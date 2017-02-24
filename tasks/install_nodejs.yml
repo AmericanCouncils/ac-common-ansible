@@ -1,5 +1,5 @@
 - name: access modern nodejs repository
-  apt_repository: repo=ppa:chris-lea/node.js
+  apt_repository: repo="deb https://deb.nodesource.com/node_4.x trusty main"
   register: nodejs_repo
 
 - name: update apt cache for nodejs repo
