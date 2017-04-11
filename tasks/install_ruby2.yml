@@ -4,6 +4,12 @@
 - name: install cmake for building native ruby gems
   apt: pkg=cmake
 
+- name: install MySQL libraries for building mysql client gems
+  apt: pkg=libmysqlclient-dev
+
+- name: install SQLite3 libraries for building mysql client gems
+  apt: pkg=libsqlite3-dev
+
 - name: add apt repository for ruby 2.3
   apt_repository: repo=ppa:brightbox/ruby-ng
 
