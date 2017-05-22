@@ -6,10 +6,7 @@
 
 - include: install_bower.yml
 
-- include: install_ruby.yml
-
-- name: install haml gem
-  gem: name=haml state=present user_install=no
+- include: install_ruby2.yml
 
 - name: install sass gem
   gem: name=sass state=present user_install=no
