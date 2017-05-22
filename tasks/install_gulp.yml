@@ -1,2 +1,2 @@
-- name: install gulp 3.8.5
-  command: npm install -g gulp@3.8.5 creates=/usr/lib/node_modules/gulp/package.json
+- name: install gulp cli
+  command: npm install -g gulp-cli creates=/usr/lib/node_modules/gulp-cli/package.json

@@ -1,5 +1,5 @@
 - name: access modern nodejs repository
-  apt_repository: repo="deb https://deb.nodesource.com/node_4.x trusty main"
+  apt_repository: repo="deb https://deb.nodesource.com/node_6.x trusty main"
   register: nodejs_repo
 
 - name: install key for modern nodejs repo
