@@ -248,6 +248,11 @@
   notify:
     - hard restart supervisor
 
+- name: install supervisor twiddler
+  command: pip install "git+https://github.com/AmericanCouncils/supervisor_twiddler.git@d01287eb422b814963fe836eef7bb044ded2e13b#egg=supervisor_twiddler"
+  notify:
+    - hard restart supervisor
+
 - name: create supervisor config directory
   file: path=/etc/supervisor.d state=directory
   notify:
@@ -295,13 +300,8 @@
   notify:
     - hard restart supervisor
 
-- name: copy supervisor twiddler install
-  copy: src=../files/install_supervisor_twiddler.sh
-        dest=/tmp/install_supervisor_twiddler.sh
-        mode=0755
-
-- name: install supervisor_twiddler
-  command: /tmp/install_supervisor_twiddler.sh
+- name: install supervisor twiddler
+  command: pip install "git+https://github.com/AmericanCouncils/supervisor_twiddler.git@d01287eb422b814963fe836eef7bb044ded2e13b#egg=supervisor_twiddler"
   notify:
     - hard restart supervisor
 
