@@ -234,9 +234,22 @@
     - reload firewall
   when: "not {{dockerized}}"
 
+- name: copy meld3 install
+  copy: src=../files/install_meld3.sh
+        dest=/tmp/install_meld3.sh
+        mode=0755
+
+- name: install meld3
+  command: /tmp/install_meld3.sh
+
 - name: install supervisor 4.0-dev with samv syslog patches
   command: pip install "git+http://github.com/AmericanCouncils/supervisor.git@2c5853b16fae8d4a7cd40cae1dd8be31a34e95c4#egg=supervisor"
            creates=/usr/local/lib/python2.7/dist-packages/supervisor/supervisord.py
+  notify:
+    - hard restart supervisor
+
+- name: install supervisor twiddler
+  command: pip install "git+https://github.com/AmericanCouncils/supervisor_twiddler.git@d01287eb422b814963fe836eef7bb044ded2e13b#egg=supervisor_twiddler"
   notify:
     - hard restart supervisor
 
@@ -287,9 +300,8 @@
   notify:
     - hard restart supervisor
 
-- name: install supervisor_twiddler rpc extension
-  command: pip install supervisor_twiddler --no-deps
-           creates=/usr/local/lib/python2.7/dist-packages/supervisor_twiddler/rpcinterface.py
+- name: install supervisor twiddler
+  command: pip install "git+https://github.com/AmericanCouncils/supervisor_twiddler.git@d01287eb422b814963fe836eef7bb044ded2e13b#egg=supervisor_twiddler"
   notify:
     - hard restart supervisor
 
