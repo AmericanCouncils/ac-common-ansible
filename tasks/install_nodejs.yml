@@ -1,14 +1,7 @@
-- name: access modern nodejs repository
-  apt_repository: repo="deb https://deb.nodesource.com/node_6.x trusty main"
-  register: nodejs_repo
-
-- name: install key for modern nodejs repo
-  command: sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 1655A0AB68576280
-  when: nodejs_repo.changed
-
-- name: update apt cache for nodejs repo
-  apt: update_cache=yes
-  when: nodejs_repo.changed
-
 - name: install nodejs
   apt: pkg=nodejs
+  tags: node_install
+
+- name: install npm
+  apt: pkg=npm
+  tags: node_install

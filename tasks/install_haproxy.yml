@@ -1,24 +1,21 @@
-- name: create haproxy user
-  user: name=haproxy
-  notify:
-    - restart haproxy
 
-- name: create haproxy user home directory
-  file: path=/home/haproxy state=directory owner=haproxy mode=0400
-  notify:
-    - restart haproxy
 
-- name: install haproxy required packages
-  apt: pkg=libssl0.9.8
-
-# We can't use the regular Ubuntu packages because they only go up to
-# haproxy 1.4, which does not have SSL support
-- name: download haproxy deb file
-  get_url: url=http://debian.byte-consult.be/haproxy_1.5-dev17_amd64.deb
-           dest=/root/haproxy.deb
+- name: remove package
+  apt: name=haproxy state=absent
+  tags: 
+    - haproxy_install
 
 - name: install haproxy
-  command: dpkg -i /root/haproxy.deb creates=/usr/sbin/haproxy
+  apt: name=haproxy state=present update_cache=yes
+  tags: 
+    - haproxy_install
+
+#- name: download haproxy deb file
+#  get_url: url=http://debian.byte-consult.be/haproxy_1.5-dev17_amd64.deb
+#           dest=/root/haproxy.deb
+
+#- name: install haproxy
+#  command: dpkg -i /root/haproxy.deb creates=/usr/sbin/haproxy
 
 - include: supervisorify.yml
   vars:

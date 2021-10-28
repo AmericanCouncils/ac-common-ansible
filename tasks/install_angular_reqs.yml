@@ -9,7 +9,9 @@
 - include: install_ruby2.yml
 
 - name: install sass gem
-  gem: name=sass state=present user_install=no
+  gem: name=sass state=present user_install=no 
+  tags: install_gem
 
 - name: install sass-css-importer gem
   gem: name=sass-css-importer state=present version=1.0.0.beta.0 user_install=no
+  tags: install_gem

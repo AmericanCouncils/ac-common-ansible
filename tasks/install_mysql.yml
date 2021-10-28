@@ -1,19 +1,27 @@
 - name: install mysql
   apt: pkg=mysql-server
+  tags: 
+    - mysql_install
 
 - name: install mysql config file
   copy:
-    src=../files/my.cnf
+    src=../files/mysqld.cnf
     dest=/etc/mysql/my.cnf
     mode=0444
   notify:
     - restart mysql
+  tags: 
+    - mysql_install
 
 - include: supervisorify.yml
   vars:
     service: mysql
     command: /usr/sbin/mysqld
     procname: mysqld
+  tags: 
+    - mysql_install
 
 - name: install mysql python library
   apt: pkg=python-mysqldb
+  tags: 
+    - mysql_install
