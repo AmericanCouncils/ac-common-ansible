@@ -5,7 +5,7 @@
 
 - name: supervisorify {{service}} - link old-style init script to wrapper
   file: src=/sbin/init-supervisor-wrapper
-        dest=/etc/init.d/{{service}}
+        dest=/etc/systemd/system/{{service}}
         state=link
         force=yes
   register: init_script

@@ -12,3 +12,8 @@
 
 - name: install nodejs
   apt: pkg=nodejs
+  tags: node_install
+
+- name: install npm
+  apt: pkg=npm
+  tags: node_install

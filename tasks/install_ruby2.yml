@@ -1,23 +1,37 @@
 - name: install build-essential for building native ruby gems
   apt: pkg=build-essential
+  tags: install_ruby
 
 - name: install cmake for building native ruby gems
   apt: pkg=cmake
+  tags: install_ruby
 
 - name: install MySQL libraries for building mysql client gems
   apt: pkg=libmysqlclient-dev
+  tags: install_ruby
 
 - name: install SQLite3 libraries for building mysql client gems
   apt: pkg=libsqlite3-dev
+  tags: install_ruby
 
-- name: add apt repository for ruby 2.3
+- name: add apt repository for ruby 2.7
   apt_repository: repo=ppa:brightbox/ruby-ng
+  tags: install_ruby
 
 - name: install ruby 2
-  apt: pkg=ruby2.3
+  apt: pkg=ruby2.7
+  tags: install_ruby
 
 - name: install ruby 2 dev
-  apt: pkg=ruby2.3-dev
+  apt: pkg=ruby2.7-dev
+  tags: install_ruby
 
 - name: install bundler gem
   gem: name=bundler state=present user_install=no
+  tags: install_ruby
+
+
+  #sudo gem update --system 
+  #sudo gem install rubygems-update
+  #sudo update_rubygems
+  #sudo gem install sass
