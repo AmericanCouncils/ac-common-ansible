@@ -13,4 +13,3 @@
   tags: haproxy_conf
   notify:
     - restart haproxy
-

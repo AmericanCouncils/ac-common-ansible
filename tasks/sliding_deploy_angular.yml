@@ -27,7 +27,7 @@
   command: npm install --unsafe-perm
            chdir="{{app_dir}}/deployments/{{name}}/setup"
 
-- name: sliding_deploy_angular {{name}} - install bower dependencies
+- name: sliding_deploy_angular {{name}} - install bower dependencies...
   command: ./node_modules/bower/bin/bower install --dev --allow-root
            chdir="{{app_dir}}/deployments/{{name}}/setup"
 
