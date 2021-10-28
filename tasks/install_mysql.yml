@@ -16,4 +16,5 @@
     procname: mysqld
 
 - name: install mysql python library
-  apt: pkg=python-mysqldb
+  pip: name=mysqlclient
+
