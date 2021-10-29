@@ -131,10 +131,9 @@
   apt: pkg={{item}}
   with_items:
     - curl
-    - python-pip
-    - python-setuptools-git
-    - python-pycurl
-    - python-mysqldb
+    - python3-pip
+    - python3-setuptools-git
+    - python3-pycurl
     - dnsutils
     - file
     - info
@@ -234,11 +233,22 @@
     - reload firewall
   when: "not {{dockerized}}"
 
+- name: install supervisor 4.0-dev with samv syslog patches
+  command: pip3 install "git+http://github.com/AmericanCouncils/supervisor.git@2c5853b16fae8d4a7cd40cae1dd8be31a34e95c4#egg=supervisor"
+           creates=/usr/local/lib/python3.4/dist-packages/supervisor/supervisord.py
+  notify:
+    - hard restart supervisor
 
+- name: create supervisor config directory
+  file: path=/etc/supervisor.d state=directory
+  notify:
+    - hard restart supervisor
 
-- name: install supervisor 
-  apt: pkg=supervisor
-  
+- name: create supervisor log directories
+  file: path=/var/log/supervisor/ state=directory
+  notify:
+    - hard restart supervisor
+
 - name: create upstart configuration for supervisor
   copy: src=../files/supervisor-upstart.conf
         dest=/etc/init/supervisor.conf
@@ -248,7 +258,7 @@
 
 - name: link init.d/supervisor to upstart-job
   file: src=/lib/init/upstart-job
-        dest=/etc/systemd/system/supervisor
+        dest=/etc/init.d/supervisor
         state=link
         force=yes
   when: "not {{dockerized}}"
@@ -265,7 +275,7 @@
 
 - name: link old-style supervisor init script to runit wrapper
   file: src=/sbin/init-runit-wrapper
-        dest=/etc/systemd/system/supervisor
+        dest=/etc/init.d/supervisor
         state=link
         force=yes
   when: dockerized
@@ -277,8 +287,8 @@
     - hard restart supervisor
 
 - name: install supervisor_twiddler rpc extension
-  command: pip install supervisor_twiddler --no-deps
-           creates=/usr/local/lib/python2.7/dist-packages/supervisor_twiddler/rpcinterface.py
+  command: pip3 install supervisor_twiddler --no-deps
+           creates=/usr/local/lib/python3.4/dist-packages/supervisor_twiddler/rpcinterface.py
   notify:
     - hard restart supervisor
 
