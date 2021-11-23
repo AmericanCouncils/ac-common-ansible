@@ -1,10 +1,11 @@
 - name: detect if we are in a docker container
   stat: path=/etc/dockerized
   register: dockerized_file
+  tags: supervisor
 
 - set_fact:
     dockerized: "{{dockerized_file.stat.exists}}"
-
+  tags: supervisor
 - name: install init-runit-wrapper
   copy: src=../files/init-runit-wrapper
         dest=/sbin/init-runit-wrapper
@@ -43,10 +44,10 @@
   when: dockerized
 
 - name: generate locale
-  command: locale-gen en_US.UTF-8 creates=/var/lib/locales/supported.d/local
+  command: sudo locale-gen en_US.UTF-8 creates=/var/lib/locales/supported.d/local
 
 - name: set locale
-  command: update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
+  command: sudo update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
            creates=/etc/default/locale
 
 - name: set /etc/localtime
@@ -66,14 +67,14 @@
   command: touch /var/log/lastlog creates=/var/log/lastlog
 
 - name: set shell prompt to show full hostname with production tag
-  lineinfile: dest={{item}}
+  lineinfile: dest=item
               regexp="^export PS1="
               line='export PS1="\[\033[1;31m\][PROD]\[\033[0m\] \u@\H:\w\$ "'
   with_items:
     - "/etc/skel/.bashrc"
-    - "/home/{{ansible_ssh_user}}/.bashrc"
-    - "/root/.bashrc"
-  when: "{{production}}"
+    - "/home/{{ ansible_ssh_user }}/.bashrc"
+    #- "/root/.bashrc"
+  when: "production"
 
 - name: set shell prompt to show full hostname without production tag
   lineinfile: dest={{item}}
@@ -81,30 +82,37 @@
               line='export PS1="\u@\H:\w\$ "'
   with_items:
     - "/etc/skel/.bashrc"
-    - "/home/{{ansible_ssh_user}}/.bashrc"
-    - "/root/.bashrc"
-  when: "not {{production}}"
+    - "/home/{{ ansible_ssh_user }}/.bashrc"
+    #- "/root/.bashrc"
+  when: "not production"
 
-- name: allow ssh key forwarding through sudo
-  lineinfile: dest=/etc/sudoers
-              line="Defaults env_keep+=SSH_AUTH_SOCK"
-              regexp="Defaults env_keep\\+=SSH_AUTH_SOCK"
-              insertafter="^Defaults"
+- name: allow ssh key forwarding through sudo 
+  lineinfile:
+    path: /etc/sudoers
+    state: present
+    regexp: 'Defaults env_keep\\+=SSH_AUTH_SOCK'
+    line: 'Defaults env_keep+=SSH_AUTH_SOCK'
+    validate: '/usr/sbin/visudo -cf %s'
+  become: yes
 
 - name: add github ssh host key
   copy: src=../files/ssh_known_hosts
         dest=/etc/ssh/ssh_known_hosts
         mode=0444
+  become: yes
 
 - name: update apt cache
   apt: update_cache=yes
+  become: yes
 
 - name: remove old apt packages (usually old linux kernel versions)
   command: apt-get autoremove -y
+  become: yes
 
 - name: remove puppet-generated resolvconf config
   file: path=/var/run/resolvconf/interface/original.resolvconf state=absent
   when: dockerized
+  become: yes
 
 - include: hosts_extra_entry.yml
   vars:
@@ -115,7 +123,7 @@
   apt: pkg=chrony
   notify:
     - restart chrony
-  when: "not {{dockerized}}"
+  when: "not dockerized"
 
 - name: configure ntp daemon
   copy: src=../files/chrony.conf
@@ -125,7 +133,7 @@
         group=root
   notify:
     - restart chrony
-  when: "not {{dockerized}}"
+  when: "not dockerized"
 
 - name: install basic utilities and python libraries
   apt: pkg={{item}}
@@ -203,6 +211,7 @@
     - samba
     - syslog
     - user.log
+  become: yes
 
 - name: remove landscape
   apt: pkg=landscape-common state=absent
@@ -216,7 +225,7 @@
   apt: pkg=ferm
   notify:
     - reload firewall
-  when: "not {{dockerized}}"
+  when: "not dockerized"
 
 - name: configure default ferm firewall rules
   tags: firewall
@@ -224,20 +233,23 @@
         dest=/etc/ferm/ferm.conf
   notify:
     - reload firewall
-  when: "not {{dockerized}}"
+  when: "not dockerized"
+  become: yes
 
 - name: create ferm.d conf directory
   tags: firewall
   file: path=/etc/ferm/ferm.d state=directory
   notify:
     - reload firewall
-  when: "not {{dockerized}}"
+  when: "not dockerized" 
+  become: yes
 
-- name: install supervisor 4.0-dev with samv syslog patches
-  command: pip3 install "git+http://github.com/AmericanCouncils/supervisor.git@2c5853b16fae8d4a7cd40cae1dd8be31a34e95c4#egg=supervisor"
-           creates=/usr/local/lib/python3.4/dist-packages/supervisor/supervisord.py
+- name: install supervisor 
+  command: sudo apt-get -y install supervisor
+           creates=/usr/local/lib/python3.8/dist-packages/supervisor/supervisord.py
   notify:
     - hard restart supervisor
+  tags: supervisor
 
 - name: create supervisor config directory
   file: path=/etc/supervisor.d state=directory
@@ -248,30 +260,34 @@
   file: path=/var/log/supervisor/ state=directory
   notify:
     - hard restart supervisor
+  tags: supervisor
 
 - name: create upstart configuration for supervisor
   copy: src=../files/supervisor-upstart.conf
-        dest=/etc/init/supervisor.conf
-  when: "not {{dockerized}}"
+        dest=/etc/init.d/supervisor.conf
+  when: "not dockerized"
   notify:
     - hard restart supervisor
+  tags: supervisor
 
-- name: link init.d/supervisor to upstart-job
-  file: src=/lib/init/upstart-job
-        dest=/etc/init.d/supervisor
-        state=link
-        force=yes
-  when: "not {{dockerized}}"
+# - name: link init.d/supervisor to upstart-job
+#   file: src=/lib/init/upstart-job
+#         dest=/etc/init.d/supervisor
+#         state=link
+#         force=yes
+#   when: "not dockerized"
 
 - name: create runit service directories for supervisor
   file: path=/etc/service/supervisor/supervise state=directory mode=0700 owner=root group=root
   when: dockerized
+  tags: supervisor
 
 - name: set supervisor under runit control
   copy: src=../files/supervisor-runit.sh
         dest=/etc/service/supervisor/run
         mode=0500
   when: dockerized
+  tags: supervisor
 
 - name: link old-style supervisor init script to runit wrapper
   file: src=/sbin/init-runit-wrapper
@@ -279,18 +295,21 @@
         state=link
         force=yes
   when: dockerized
+  tags: supervisor
 
 - name: install supervisor config file
   copy: src=../files/supervisord.conf
-        dest=/etc/supervisord.conf
+        dest=/etc/supervisor/supervisord.conf
   notify:
     - hard restart supervisor
+  tags: supervisor
 
 - name: install supervisor_twiddler rpc extension
-  command: pip3 install supervisor_twiddler --no-deps
-           creates=/usr/local/lib/python3.4/dist-packages/supervisor_twiddler/rpcinterface.py
+  command: pip install supervisor_twiddler --no-deps
+           creates=/usr/local/lib/python3.8/dist-packages/supervisor_twiddler/rpcinterface.py
   notify:
     - hard restart supervisor
+  tags: supervisor
 
 - name: configure supervisor_twiddler
   copy: src=../files/twiddler.conf
@@ -300,3 +319,5 @@
 
 - name: flush ansible handlers
   meta: flush_handlers
+  tags: supervisor
+

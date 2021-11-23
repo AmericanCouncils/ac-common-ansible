@@ -1,19 +1,20 @@
 - name: install mysql
   apt: pkg=mysql-server
 
-- name: install mysql config file
-  copy:
-    src=../files/my.cnf
-    dest=/etc/mysql/my.cnf
-    mode=0444
-  notify:
-    - restart mysql
+- name: install mysql_config
+  apt: pkg=libmysqlclient-dev
 
 - include: supervisorify.yml
   vars:
     service: mysql
     command: /usr/sbin/mysqld
     procname: mysqld
+
+- name: install mysql config file
+  copy:
+    src=../files/my.cnf
+    dest=/etc/mysql/my.cnf
+    mode=0444
 
 - name: install mysql python library
   pip: name=mysqlclient

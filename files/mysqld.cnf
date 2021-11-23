@@ -28,6 +28,7 @@ nice		= 0
 #
 # * Basic Settings
 #
+mysqlx=0 
 user		= mysql
 pid-file	= /var/run/mysqld/mysqld.pid
 socket		= /var/run/mysqld/mysqld.sock

@@ -8,7 +8,8 @@
   service: name=supervisor state=reloaded
 
 - name: hard restart supervisor
-  service: name=supervisor state=restarted sleep=1
+  service: name=supervisor state=restarted 
+  become: yes
 
 - name: reload syslog-ng
   service: name=syslog-ng state=reloaded
