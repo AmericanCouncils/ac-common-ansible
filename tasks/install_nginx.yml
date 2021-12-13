@@ -1,43 +1,52 @@
 - name: access modern nginx repository
   apt_repository: repo=ppa:chris-lea/nginx-devel
   register: nginx_repo
+  tags: install_nginx
 
 - name: update apt cache for nginx repo
   apt: update_cache=yes
   when: nginx_repo.changed
+  tags: install_nginx
 
-- name: install nginx 1.7 with third party modules
+- name: install nginx stable with third party modules
   apt: pkg=nginx-extras
   notify:
     - restart nginx
+  tags: install_nginx
 
 - name: delete default nginx app
   file: path=/etc/nginx/sites-enabled/default state=absent
   notify:
     - restart nginx
+  tags: install_nginx
 
 - name: delete useless nginx conf.d directory
   file: path=/etc/nginx/conf.d state=absent
   notify:
     - restart nginx
+  tags: install_nginx
 
 - name: create nginx site directories
   file: path=/etc/nginx/sites-{{item}}/ state=directory
   with_items:
     - enabled
     - available
+  tags: install_nginx
 
 - name: create nginx log directory (nginx requires it even though it is unused)
   file: path=/var/log/nginx state=directory
+  tags: install_nginx
 
 - name: setup central nginx config
   copy: src=../files/nginx.conf
         dest=/etc/nginx/nginx.conf
   notify:
     - restart nginx
+  tags: install_nginx
 
 - include: supervisorify.yml
   vars:
     service: nginx
     command: /usr/sbin/nginx
-    start_secs: 5
+    start_secs: 0
+  tags: install_nginx

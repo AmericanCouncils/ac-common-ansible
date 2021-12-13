@@ -1,6 +1,0 @@
-  - name: restart supervisor processes
-    pause:
-      seconds: 15
-    notify:
-      - restart mysql
-      - restart redis

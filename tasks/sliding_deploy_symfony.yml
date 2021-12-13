@@ -19,12 +19,12 @@
     - dev
 
 # Despite the 'removes' argument, this command removes no files.
-# We just don't want to try to restart php5-fpm if it's not installed.
-- name: force php5-fpm restart
-  command: echo triggering restart of php5-fpm
-           removes=/etc/supervisor.d/php5-fpm-supervisor.conf
+# We just don't want to try to restart php-fpm if it's not installed.
+- name: force php-fpm restart
+  command: echo triggering restart of php-fpm
+           removes=/etc/supervisor.d/php-fpm7.4-supervisor.conf
   notify:
-    - restart php5-fpm
+    - restart php-fpm7.4
 
 - include: sliding_deploy_apply.yml
   # Passing through vars: app_dir, name

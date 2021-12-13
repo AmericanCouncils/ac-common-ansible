@@ -29,8 +29,8 @@
 - name: restart haproxy
   supervisorctl: name=haproxy state=restarted
 
-- name: restart php5-fpm
-  supervisorctl: name=php5-fpm state=restarted
+- name: restart php7-fpm7.4
+  supervisorctl: name=php-fpm7.4 state=restarted
 
 - name: restart rabbitmq-server
   supervisorctl: name=rabbitmq-server state=restarted

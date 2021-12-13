@@ -2,7 +2,7 @@
 
 user = {{user}}
 group = {{user}}
-listen = /var/run/php5-fpm-{{poolname|default(user)}}.sock
+listen = /var/run/php7.4-fpm-{{poolname|default(user)}}.sock
 listen.owner = {{user}}
 listen.group = www-data
 listen.mode = 0660
