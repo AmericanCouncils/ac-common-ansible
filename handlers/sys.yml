@@ -16,6 +16,7 @@
 
 - name: restart dnsmasq
   service: name=dnsmasq state=restarted
+  become: yes
 
 - name: restart chrony
   service: name=chrony state=restarted
