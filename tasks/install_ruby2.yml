@@ -26,7 +26,12 @@
   apt: pkg=ruby2.7-dev
   tags: install_ruby
 
+- name: install shared-mime-info
+  apt: pkg=shared-mime-info
+  tags: install_ruby
+  
 - name: install bundler gem
+  become: yes
   gem: name=bundler state=present user_install=no
   tags: install_ruby
 
