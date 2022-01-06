@@ -3,31 +3,31 @@
         dest=/sbin/init-supervisor-wrapper
         mode=555
 
-# - name: supervisorify {{service}} - link old-style init script to wrapper
-#   file: src=/sbin/init-supervisor-wrapper
-#         dest=/etc/systemd/system/{{service}}
-#         state=link
-#         force=yes
-#   register: init_script
+- name: supervisorify {{service}} - link old-style init script to wrapper
+  file: src=/sbin/init-supervisor-wrapper
+        dest=/etc/init.d/{{service}}
+        state=link
+        force=yes
+  register: init_script
 
-# - name: supervisorify {{service}} - remove old-style rc startup links
-#   service: name={{service}} enabled=no
-#   ignore_errors: True
+- name: supervisorify {{service}} - remove old-style rc startup links
+  service: name={{service}} enabled=no
+  ignore_errors: True
 
-# - name: supervisorify {{service}} - remove upstart config for service
-#   file: path=/etc/init/{{service}}.conf
-#         state=absent
-#   register: upstart_config
+- name: supervisorify {{service}} - remove upstart config for service
+  file: path=/etc/init/{{service}}.conf
+        state=absent
+  register: upstart_config
 
-# - name: supervisorify {{service}} - stop old upstart-controlled process
-#   command: stop {{service}}
-#   when: upstart_config.changed or init_script.changed
-#   ignore_errors: True
+- name: supervisorify {{service}} - stop old upstart-controlled process
+  command: stop {{service}}
+  when: upstart_config.changed or init_script.changed
+  ignore_errors: True
 
-# - name: supervisorify {{service}} - kill old service process directly
-#   shell: pkill -9 -f {{procname|default(service)}}
-#   when: upstart_config.changed or init_script.changed
-#   ignore_errors: True
+- name: supervisorify {{service}} - kill old service process directly
+  shell: pkill -9 -f {{procname|default(service)}}
+  when: upstart_config.changed or init_script.changed
+  ignore_errors: True
 
 - name: supervisorify {{service}} - create supervisor service config file
   template: src=../templates/supervisor-service.conf.j2

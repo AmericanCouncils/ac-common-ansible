@@ -4,11 +4,19 @@
 - name: install mysql_config
   apt: pkg=libmysqlclient-dev
 
-- include: supervisorify.yml
-  vars:
-    service: mysql
-    command: /usr/sbin/mysqld
-    procname: mysqld
+# DITCH SUPERVISOR
+# - include: supervisorify.yml
+#   vars:
+#     service: mysql
+#     command: /usr/sbin/mysqld
+#     procname: mysqld
+
+# SWITCH TO RUNIT
+- name: set mysql under runit control
+  copy: src=../files/mysql-runit.sh
+        dest=/etc/service/mysql/run
+        mode=0500
+  when: dockerized
 
 - name: install mysql config file
   copy:

@@ -1,5 +1,4 @@
 - name: install key for modern nodejs repo
-  become: true
   apt_key:
     keyserver: keyserver.ubuntu.com
     id: 1655A0AB68576280
@@ -7,13 +6,11 @@
 
 - name: access modern nodejs repository
   debugger: on_failed
-  become: true
   apt_repository: repo="deb https://deb.nodesource.com/node_16.x focal main"
   register: nodejs_repo
   tags: node_install
 
 - name: update apt cache for nodejs repo
-  become: true
   apt: update_cache=yes
   when: nodejs_repo.changed
 

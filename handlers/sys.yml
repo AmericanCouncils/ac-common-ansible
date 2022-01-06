@@ -2,21 +2,19 @@
   command: /usr/sbin/dpkg-reconfigure --frontend noninteractive tzdata
 
 - name: reload firewall
-  command: /etc/init.d/ferm reload
+  command: /etc/systemd/system/ferm reload
 
 - name: reload supervisor
   service: name=supervisor state=reloaded
 
 - name: hard restart supervisor
   service: name=supervisor state=restarted 
-  become: yes
 
 - name: reload syslog-ng
   service: name=syslog-ng state=reloaded
 
 - name: restart dnsmasq
   service: name=dnsmasq state=restarted
-  become: yes
 
 - name: restart chrony
   service: name=chrony state=restarted

@@ -1,7 +1,6 @@
 - name: detect if we are in a docker container
   stat: path=/etc/dockerized
   register: dockerized_file
-  tags: supervisor
 
 - set_fact:
     dockerized: "{{dockerized_file.stat.exists}}"
@@ -104,11 +103,9 @@
 
 - name: update apt cache
   apt: update_cache=yes
-  become: yes
 
 - name: remove old apt packages (usually old linux kernel versions)
   command: apt-get autoremove -y
-  become: yes
 
 - name: remove puppet-generated resolvconf config
   file: path=/var/run/resolvconf/interface/original.resolvconf state=absent
