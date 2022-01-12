@@ -4,38 +4,53 @@
 - name: reload firewall
   command: /etc/systemd/system/ferm reload
 
-- name: reload supervisor
-  service: name=supervisor state=reloaded
+# - name: reload supervisor
+#   service: name=supervisor state=reloaded
 
-- name: hard restart supervisor
-  service: name=supervisor state=restarted 
+# - name: hard restart supervisor
+#   service: name=supervisor state=restarted 
 
 - name: reload syslog-ng
   service: name=syslog-ng state=reloaded
 
 - name: restart dnsmasq
-  service: name=dnsmasq state=restarted
+  runit:
+    name: dnscache
+    state: started
+  #service: name=dnsmasq state=restarted
 
 - name: restart chrony
   service: name=chrony state=restarted
 
 - name: restart nginx
-  supervisorctl: name=nginx state=restarted
+  runit:
+    name: nginx
+    state: started
+  # supervisorctl: name=nginx state=restarted
 
 - name: restart mysql
-  supervisorctl: name=mysql state=restarted
+  runit:
+    name: mysql
+    state: started
+  #supervisorctl: name=mysql state=restarted
 
 - name: restart haproxy
-  supervisorctl: name=haproxy state=restarted
+  runit:
+    name: haproxy
+    state: started
+  # supervisorctl: name=haproxy state=restarted
 
-- name: restart php7-fpm7.4
-  supervisorctl: name=php-fpm7.4 state=restarted
+# - name: restart php7-fpm7.4
+#   supervisorctl: name=php-fpm7.4 state=restarted
 
 - name: restart rabbitmq-server
   supervisorctl: name=rabbitmq-server state=restarted
 
 - name: restart redis
-  supervisorctl: name=redis-default state=restarted
+  runit:
+    name: redis-defaut
+    state: started
+  # supervisorctl: name=redis-default state=restarted
 
 - name: restart mongodb
   supervisorctl: name=mongodb state=restarted

@@ -3,9 +3,20 @@
 
 - name: set up redis.conf {{redis_name|default('default')}}
   template: src=../templates/redis.conf.j2 dest=/etc/redis/redis-default.conf
-  
-- include: supervisorify.yml
-  vars:
-    service: redis-default
-    command: /usr/bin/redis-server /etc/redis/redis-default.conf
-    procname: redis-server
+
+# DITCH SUPERVISOR  
+# - include: supervisorify.yml
+#   vars:
+#     service: redis-default
+#     command: /usr/bin/redis-server /etc/redis/redis-default.conf
+#     procname: redis-server
+
+# SWITCH TO RUNIT
+- name: create runit service directories for redis-default
+  file: path=/etc/service/redis-default/supervise state=directory mode=0700 owner=root group=root
+
+- name: set redis under runit control
+  copy: src=../files/redis-default-runit.sh
+        dest=/etc/service/redis-default/run
+        mode=0500
+  when: dockerized

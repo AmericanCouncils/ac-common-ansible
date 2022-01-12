@@ -4,7 +4,6 @@
 
 - set_fact:
     dockerized: "{{dockerized_file.stat.exists}}"
-  tags: supervisor
 - name: install init-runit-wrapper
   copy: src=../files/init-runit-wrapper
         dest=/sbin/init-runit-wrapper
@@ -34,13 +33,6 @@
   copy: src=../files/dnsmasq-runit.sh
         dest=/etc/service/dnsmasq/run
         mode=0500
-  when: dockerized
-
-- name: link old-style dnsmasq init script to runit wrapper
-  file: src=/sbin/init-runit-wrapper
-        dest=/etc/init.d/dnsmasq
-        state=link
-        force=yes
   when: dockerized
 
 - name: generate locale
@@ -73,7 +65,6 @@
   with_items:
     - "/etc/skel/.bashrc"
     - "/home/{{ ansible_ssh_user }}/.bashrc"
-    #- "/root/.bashrc"
   when: "production"
 
 - name: set shell prompt to show full hostname without production tag
@@ -83,7 +74,6 @@
   with_items:
     - "/etc/skel/.bashrc"
     - "/home/{{ ansible_ssh_user }}/.bashrc"
-    #- "/root/.bashrc"
   when: "not production"
 
 - name: allow ssh key forwarding through sudo 
@@ -241,80 +231,7 @@
     - reload firewall
   when: "not dockerized" 
   become: yes
-
-- name: install supervisor 
-  command: sudo apt-get -y install supervisor
-           creates=/usr/local/lib/python3.8/dist-packages/supervisor/supervisord.py
-  notify:
-    - hard restart supervisor
-  tags: supervisor
-
-- name: create supervisor config directory
-  file: path=/etc/supervisor.d state=directory
-  notify:
-    - hard restart supervisor
-
-- name: create supervisor log directories
-  file: path=/var/log/supervisor/ state=directory
-  notify:
-    - hard restart supervisor
-  tags: supervisor
-
-- name: create upstart configuration for supervisor
-  copy: src=../files/supervisor-upstart.conf
-        dest=/etc/init.d/supervisor.conf
-  when: "not dockerized"
-  notify:
-    - hard restart supervisor
-  tags: supervisor
-
-# - name: link init.d/supervisor to upstart-job
-#   file: src=/lib/init/upstart-job
-#         dest=/etc/init.d/supervisor
-#         state=link
-#         force=yes
-#   when: "not dockerized"
-
-- name: create runit service directories for supervisor
-  file: path=/etc/service/supervisor/supervise state=directory mode=0700 owner=root group=root
-  when: dockerized
-  tags: supervisor
-
-- name: set supervisor under runit control
-  copy: src=../files/supervisor-runit.sh
-        dest=/etc/service/supervisor/run
-        mode=0500
-  when: dockerized
-  tags: supervisor
-
-- name: link old-style supervisor init script to runit wrapper
-  file: src=/sbin/init-runit-wrapper
-        dest=/etc/init.d/supervisor
-        state=link
-        force=yes
-  when: dockerized
-  tags: supervisor
-
-- name: install supervisor config file
-  copy: src=../files/supervisord.conf
-        dest=/etc/supervisor/supervisord.conf
-  notify:
-    - hard restart supervisor
-  tags: supervisor
-
-- name: install supervisor_twiddler rpc extension
-  command: pip install supervisor_twiddler --no-deps
-           creates=/usr/local/lib/python3.8/dist-packages/supervisor_twiddler/rpcinterface.py
-  notify:
-    - hard restart supervisor
-  tags: supervisor
-
-- name: configure supervisor_twiddler
-  copy: src=../files/twiddler.conf
-        dest=/etc/supervisor.d/twiddler.conf
-  notify:
-    - hard restart supervisor
-
+  
 - name: flush ansible handlers
   meta: flush_handlers
   tags: supervisor
