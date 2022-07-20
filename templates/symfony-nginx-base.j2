@@ -51,7 +51,7 @@ server {
     rewrite ^ /{{phpscript}}.php?$query_string break;
 
     include fastcgi_params;
-    fastcgi_pass unix:/var/run/php5-fpm-{{name}}.sock;
+    fastcgi_pass unix:/var/run/php7.4-fpm-{{name}}.sock;
     fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
 
     {% block fastcgi_https_proxy %}

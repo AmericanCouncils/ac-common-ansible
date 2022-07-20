@@ -6,13 +6,13 @@
 
 - name: symfony_app_user {{user}} - set php-fpm to run a pool as the app user
   template: src=../templates/php-fpm-pool.conf.j2
-            dest=/etc/php5/fpm/pool.d/{{poolname|default(user)}}.conf
+            dest=/etc/php/fpm/pool.d/{{poolname|default(user)}}.conf
   ignore_errors: true # If php-fpm isn't installed, don't worry about it
   notify:
-    - restart php5-fpm
+    - restart php-fpm7.4
 
 - name: symfony_app_user {{user}} - delete default php-fpm pool
-  file: path=/etc/php5/fpm/pool.d/www.conf state=absent
+  file: path=/etc/php/fpm/pool.d/www.conf state=absent
   ignore_errors: true # If php-fpm isn't installed, don't worry about it
   notify:
-    - restart php5-fpm
+    - restart php-fpm7.4

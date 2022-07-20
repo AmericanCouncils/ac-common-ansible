@@ -1,7 +1,19 @@
-- name: install nodejs
-  apt: pkg=nodejs
+- name: install key for modern nodejs repo
+  apt_key:
+    keyserver: keyserver.ubuntu.com
+    id: 1655A0AB68576280
   tags: node_install
 
-- name: install npm
-  apt: pkg=npm
+- name: access modern nodejs repository
+  debugger: on_failed
+  apt_repository: repo="deb https://deb.nodesource.com/node_16.x focal main"
+  register: nodejs_repo
+  tags: node_install
+
+- name: update apt cache for nodejs repo
+  apt: update_cache=yes
+  when: nodejs_repo.changed
+
+- name: install nodejs
+  apt: pkg=nodejs
   tags: node_install

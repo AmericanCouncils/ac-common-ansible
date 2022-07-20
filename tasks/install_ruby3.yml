@@ -14,22 +14,18 @@
   apt: pkg=libsqlite3-dev
   tags: install_ruby
 
-- name: add apt repository for ruby 2.7
+- name: add apt repository for ruby 3.0.2
   apt_repository: repo=ppa:brightbox/ruby-ng
   tags: install_ruby
 
-- name: install ruby 2
-  apt: pkg=ruby2.7
+- name: install ruby 3
+  apt: pkg=ruby3.0.2
   tags: install_ruby
 
-- name: install ruby 2 dev
-  apt: pkg=ruby2.7-dev
+- name: install ruby 3 dev
+  apt: pkg=ruby3.0.2-dev
   tags: install_ruby
 
-- name: install shared-mime-info
-  apt: pkg=shared-mime-info
-  tags: install_ruby
-  
 - name: install bundler gem
   gem: name=bundler state=present user_install=no
   tags: install_ruby

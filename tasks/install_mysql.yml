@@ -1,27 +1,40 @@
 - name: install mysql
   apt: pkg=mysql-server
-  tags: 
-    - mysql_install
+  become: yes
+
+- name: install mysql_config
+  apt: pkg=libmysqlclient-dev
+  become: yes
 
 - name: install mysql config file
   copy:
-    src=../files/mysqld.cnf
+    src=../files/my.cnf
     dest=/etc/mysql/my.cnf
     mode=0444
-  notify:
-    - restart mysql
-  tags: 
-    - mysql_install
+  become: yes
+    
+# SWITCH TO RUNIT
+- name: create runit service directories for mysql
+  file: path=/etc/service/mysql/supervise state=directory mode=0700 owner=root group=root
 
-- include: supervisorify.yml
-  vars:
-    service: mysql
-    command: /usr/sbin/mysqld
-    procname: mysqld
-  tags: 
-    - mysql_install
+- name: set mysql under runit control
+  copy: src=../files/mysql-runit.sh
+        dest=/etc/service/mysql/run
+        mode=0500
+  when: dockerized
 
 - name: install mysql python library
-  apt: pkg=python-mysqldb
-  tags: 
-    - mysql_install
+  pip: name=mysqlclient
+
+- name: Create mysql user
+  mysql_user:
+     name: mysql
+     password: 'mysql'
+     priv: '*.*:ALL,GRANT'
+
+# mysql_root_password: "mysql_root_password"
+# app_user: "sammy"
+# http_host: "your_domain"
+# http_conf: "your_domain.conf"
+# http_port: "80"
+# disable_default: true

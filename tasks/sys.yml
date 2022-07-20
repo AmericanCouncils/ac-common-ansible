@@ -4,7 +4,6 @@
 
 - set_fact:
     dockerized: "{{dockerized_file.stat.exists}}"
-
 - name: install init-runit-wrapper
   copy: src=../files/init-runit-wrapper
         dest=/sbin/init-runit-wrapper
@@ -17,6 +16,7 @@
   apt: pkg=dnsmasq
 
 - name: configure dnsmasq
+  become: yes
   copy: src=../files/dnsmasq.conf
         dest=/etc/dnsmasq.conf
         mode=0644
@@ -35,18 +35,11 @@
         mode=0500
   when: dockerized
 
-- name: link old-style dnsmasq init script to runit wrapper
-  file: src=/sbin/init-runit-wrapper
-        dest=/etc/init.d/dnsmasq
-        state=link
-        force=yes
-  when: dockerized
-
 - name: generate locale
-  command: locale-gen en_US.UTF-8 creates=/var/lib/locales/supported.d/local
+  command: sudo locale-gen en_US.UTF-8 creates=/var/lib/locales/supported.d/local
 
 - name: set locale
-  command: update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
+  command: sudo update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
            creates=/etc/default/locale
 
 - name: set /etc/localtime
@@ -64,16 +57,15 @@
 
 - name: create lastlog file
   command: touch /var/log/lastlog creates=/var/log/lastlog
-
-- name: set shell prompt to show full hostname with production tag
-  lineinfile: dest={{item}}
-              regexp="^export PS1="
-              line='export PS1="\[\033[1;31m\][PROD]\[\033[0m\] \u@\H:\w\$ "'
+# breaks playbook run and seems extraneous!!(2022)
+# - name: set shell prompt to show full hostname with production tag
+#   lineinfile: dest=item
+#               regexp="^export PS1="
+#               line='export PS1="\[\033[1;31m\][PROD]\[\033[0m\] \u@\H:\w\$ "'
   with_items:
     - "/etc/skel/.bashrc"
-    - "/home/{{ansible_ssh_user}}/.bashrc"
-    - "/root/.bashrc"
-  when: "{{production}}"
+    - "/home/{{ ansible_ssh_user }}/.bashrc"
+  when: "production"
 
 - name: set shell prompt to show full hostname without production tag
   lineinfile: dest={{item}}
@@ -81,20 +73,23 @@
               line='export PS1="\u@\H:\w\$ "'
   with_items:
     - "/etc/skel/.bashrc"
-    - "/home/{{ansible_ssh_user}}/.bashrc"
-    - "/root/.bashrc"
-  when: "not {{production}}"
+    - "/home/{{ ansible_ssh_user }}/.bashrc"
+  when: "not production"
 
-- name: allow ssh key forwarding through sudo
-  lineinfile: dest=/etc/sudoers
-              line="Defaults env_keep+=SSH_AUTH_SOCK"
-              regexp="Defaults env_keep\\+=SSH_AUTH_SOCK"
-              insertafter="^Defaults"
+- name: allow ssh key forwarding through sudo 
+  lineinfile:
+    path: /etc/sudoers
+    state: present
+    regexp: 'Defaults env_keep\\+=SSH_AUTH_SOCK'
+    line: 'Defaults env_keep+=SSH_AUTH_SOCK'
+    validate: '/usr/sbin/visudo -cf %s'
+  become: yes
 
 - name: add github ssh host key
   copy: src=../files/ssh_known_hosts
         dest=/etc/ssh/ssh_known_hosts
         mode=0444
+  become: yes
 
 - name: update apt cache
   apt: update_cache=yes
@@ -105,6 +100,7 @@
 - name: remove puppet-generated resolvconf config
   file: path=/var/run/resolvconf/interface/original.resolvconf state=absent
   when: dockerized
+  become: yes
 
 - include: hosts_extra_entry.yml
   vars:
@@ -115,7 +111,7 @@
   apt: pkg=chrony
   notify:
     - restart chrony
-  when: "not {{dockerized}}"
+  when: "not dockerized"
 
 - name: configure ntp daemon
   copy: src=../files/chrony.conf
@@ -125,16 +121,15 @@
         group=root
   notify:
     - restart chrony
-  when: "not {{dockerized}}"
+  when: "not dockerized"
 
 - name: install basic utilities and python libraries
   apt: pkg={{item}}
   with_items:
     - curl
-    - python-pip
-    - python-setuptools-git
-    - python-pycurl
-    - python-mysqldb
+    - python3-pip
+    - python3-setuptools-git
+    - python3-pycurl
     - dnsutils
     - file
     - info
@@ -204,6 +199,7 @@
     - samba
     - syslog
     - user.log
+  become: yes
 
 - name: remove landscape
   apt: pkg=landscape-common state=absent
@@ -217,7 +213,7 @@
   apt: pkg=ferm
   notify:
     - reload firewall
-  when: "not {{dockerized}}"
+  when: "not dockerized"
 
 - name: configure default ferm firewall rules
   tags: firewall
@@ -225,68 +221,18 @@
         dest=/etc/ferm/ferm.conf
   notify:
     - reload firewall
-  when: "not {{dockerized}}"
+  when: "not dockerized"
+  become: yes
 
 - name: create ferm.d conf directory
   tags: firewall
   file: path=/etc/ferm/ferm.d state=directory
   notify:
     - reload firewall
-  when: "not {{dockerized}}"
-
-
-
-- name: install supervisor 
-  apt: pkg=supervisor
+  when: "not dockerized" 
+  become: yes
   
-- name: create upstart configuration for supervisor
-  copy: src=../files/supervisor-upstart.conf
-        dest=/etc/init/supervisor.conf
-  when: "not {{dockerized}}"
-  notify:
-    - hard restart supervisor
-
-- name: link init.d/supervisor to upstart-job
-  file: src=/lib/init/upstart-job
-        dest=/etc/systemd/system/supervisor
-        state=link
-        force=yes
-  when: "not {{dockerized}}"
-
-- name: create runit service directories for supervisor
-  file: path=/etc/service/supervisor/supervise state=directory mode=0700 owner=root group=root
-  when: dockerized
-
-- name: set supervisor under runit control
-  copy: src=../files/supervisor-runit.sh
-        dest=/etc/service/supervisor/run
-        mode=0500
-  when: dockerized
-
-- name: link old-style supervisor init script to runit wrapper
-  file: src=/sbin/init-runit-wrapper
-        dest=/etc/systemd/system/supervisor
-        state=link
-        force=yes
-  when: dockerized
-
-- name: install supervisor config file
-  copy: src=../files/supervisord.conf
-        dest=/etc/supervisord.conf
-  notify:
-    - hard restart supervisor
-
-- name: install supervisor_twiddler rpc extension
-  command: pip install supervisor_twiddler --no-deps
-           creates=/usr/local/lib/python2.7/dist-packages/supervisor_twiddler/rpcinterface.py
-  notify:
-    - hard restart supervisor
-
-- name: configure supervisor_twiddler
-  copy: src=../files/twiddler.conf
-        dest=/etc/supervisor.d/twiddler.conf
-  notify:
-    - hard restart supervisor
-
 - name: flush ansible handlers
   meta: flush_handlers
+  tags: supervisor
+
