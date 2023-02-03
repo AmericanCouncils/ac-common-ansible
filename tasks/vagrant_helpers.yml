@@ -1,7 +1,7 @@
 - include: create_swapfile.yml
 
 - name: install python-keyczar
-  apt: pkg=python-keyczar
+  command: pip3 install python-keyczar
 
 - name: cd to /vagrant after login
   lineinfile: dest=/home/vagrant/.bashrc

@@ -131,10 +131,10 @@
   apt: pkg={{item}}
   with_items:
     - curl
-    - python-pip
-    - python-setuptools-git
+    - python3-pip
+    - python3-setuptools-git
     - python-pycurl
-    - python-mysqldb
+    - python3-mysqldb
     - dnsutils
     - file
     - info
@@ -235,7 +235,7 @@
   when: "not {{dockerized}}"
 
 - name: install supervisor 4.0-dev with samv syslog patches
-  command: pip install "git+http://github.com/AmericanCouncils/supervisor.git@2c5853b16fae8d4a7cd40cae1dd8be31a34e95c4#egg=supervisor"
+  command: pip3 install "git+http://github.com/AmericanCouncils/supervisor.git@2c5853b16fae8d4a7cd40cae1dd8be31a34e95c4#egg=supervisor"
            creates=/usr/local/lib/python2.7/dist-packages/supervisor/supervisord.py
   notify:
     - hard restart supervisor
@@ -288,7 +288,7 @@
     - hard restart supervisor
 
 - name: install supervisor_twiddler rpc extension
-  command: pip install supervisor_twiddler --no-deps
+  command: pip3 install supervisor_twiddler --no-deps
            creates=/usr/local/lib/python2.7/dist-packages/supervisor_twiddler/rpcinterface.py
   notify:
     - hard restart supervisor

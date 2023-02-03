@@ -14,10 +14,10 @@
   apt_repository: repo=ppa:brightbox/ruby-ng
 
 - name: install ruby 2
-  apt: pkg=ruby2.3
+  apt: pkg=ruby2.7
 
 - name: install ruby 2 dev
-  apt: pkg=ruby2.3-dev
+  apt: pkg=ruby2.7-dev
 
 - name: install bundler gem
   gem: name=bundler state=present user_install=no

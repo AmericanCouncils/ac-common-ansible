@@ -1,10 +1,17 @@
+- name: Add  GPG key
+  shell: curl -fsSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add -
+
 - name: access modern nodejs repository
-  apt_repository: repo="deb https://deb.nodesource.com/node_6.x trusty main"
+  apt_repository: repo="deb https://deb.nodesource.com/node_14.x focal main"
   register: nodejs_repo
 
-- name: install key for modern nodejs repo
-  command: sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 1655A0AB68576280
-  when: nodejs_repo.changed
+# - name: install key for modern nodejs repo
+#   become: yes
+#   command: sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 1655A0AB68576280
+#   when: nodejs_repo.changed
+# url -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+
+# $ curl --silent https://deb.nodesource.com/gpgkey/nodesource.gpg.key | sudo apt-key add -
 
 - name: update apt cache for nodejs repo
   apt: update_cache=yes
