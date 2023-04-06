@@ -6,8 +6,6 @@
 
 - include: install_bower.yml
 
-- include: install_ruby2.yml
-
 - name: install sass gem
   gem: name=sass state=present user_install=no
 
