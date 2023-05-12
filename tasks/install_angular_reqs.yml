@@ -6,8 +6,10 @@
 
 - include: install_bower.yml
 
-- name: install sass gem
-  gem: name=sass state=present user_install=no
+# - include: install_ruby2.yml
 
-- name: install sass-css-importer gem
-  gem: name=sass-css-importer state=present version=1.0.0.beta.0 user_install=no
+# - name: install sass gem
+#   gem: name=sass state=present user_install=yes
+
+# - name: install sass-css-importer gem
+#   gem: name=sass-css-importer state=present version=1.0.0.beta.0 user_install=yes

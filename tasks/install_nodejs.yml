@@ -1,8 +1,8 @@
 - name: Add  GPG key
   shell: curl -fsSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add -
 
-- name: access modern nodejs repository
-  apt_repository: repo="deb https://deb.nodesource.com/node_14.x focal main"
+- name: access modern nodejs repository!!
+  apt_repository: repo="deb https://deb.nodesource.com/node_6.x trusty main"
   register: nodejs_repo
 
 # - name: install key for modern nodejs repo
