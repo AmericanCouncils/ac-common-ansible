@@ -2,10 +2,6 @@
   apt: pkg=mysql-server
   become: yes
 
-- name: install mysql_config
-  apt: pkg=libmysqlclient-dev
-  become: yes
-
 - name: install mysql config file
   copy:
     src=../files/my.cnf
@@ -25,6 +21,9 @@
 
 - name: install mysql python library
   pip: name=mysqlclient
+  environment:
+    MYSQLCLIENT_CFLAGS: "-I/usr/include/mysql"
+    MYSQLCLIENT_LDFLAGS: "-L/usr/lib/x86_64-linux-gnu -lmysqlclient"
 
 - name: Create mysql user
   mysql_user:
