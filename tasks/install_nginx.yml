@@ -6,7 +6,7 @@
   apt: update_cache=yes
   when: nginx_repo.changed
 
-- name: install nginx 1.7 with third party modules
+- name: install nginx stable with third party modules
   apt: pkg=nginx-extras
   notify:
     - restart nginx
@@ -36,8 +36,8 @@
   notify:
     - restart nginx
 
-- include: supervisorify.yml
+- include_tasks: supervisorify.yml
   vars:
     service: nginx
     command: /usr/sbin/nginx
-    start_secs: 5
+    start_secs: 0

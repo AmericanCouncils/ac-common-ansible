@@ -1,4 +1,4 @@
-- include: sliding_deploy_pull.yml
+- include_tasks: sliding_deploy_pull.yml
   vars:
     # Passing through: name, user, git_url, version
     shared_dirs: []
@@ -43,4 +43,4 @@
 
 # TODO: Run some kind of setup script provided by the app, if it's present
 
-- include: sliding_deploy_apply.yml
+- include_tasks: sliding_deploy_apply.yml

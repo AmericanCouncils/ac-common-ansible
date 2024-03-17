@@ -1,15 +1,11 @@
-- include: install_nodejs.yml
-
-# this is redundant, doe it matter?
-- include: install_grunt.yml
-- include: install_gulp.yml
-
-- include: install_bower.yml
-
-# - include: install_ruby2.yml
-
-# - name: install sass gem
-#   gem: name=sass state=present user_install=yes
-
-# - name: install sass-css-importer gem
-#   gem: name=sass-css-importer state=present version=1.0.0.beta.0 user_install=yes
+- include_tasks: install_nodejs.yml
+- include_tasks: install_grunt.yml
+- include_tasks: install_gulp.yml
+- include_tasks: install_bower.yml
+- include_tasks: install_ruby2.yml
+- name: install sass gem
+  gem: name=sass state=present user_install=no
+- name: install sass-css-importer gem
+  gem: name=sass-css-importer state=present version=1.0.0.beta.0 user_install=no
+  gem: name=sass state=present user_install=no
+  tags: install_gem

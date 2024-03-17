@@ -1,5 +1,5 @@
-- name: install libmysqlclient-dev
-  apt: pkg=libmysqlclient-dev
+# - name: install libmysqlclient-dev
+#   apt: pkg=libmysqlclient-dev
 
 - name: install libsqlite3-dev
   apt: pkg=libsqlite3-dev

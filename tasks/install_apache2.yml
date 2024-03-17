@@ -1,0 +1,2 @@
+- name: install Apache packages
+  apt: pkg=apache2

@@ -4,7 +4,7 @@
 - name: enable rabbitmq management
   shell: rabbitmq-plugins enable rabbitmq_management
 
-- include: supervisorify.yml
+- include_tasks: supervisorify.yml
   vars:
     service: rabbitmq-server
     command: /usr/lib/rabbitmq/bin/rabbitmq-server

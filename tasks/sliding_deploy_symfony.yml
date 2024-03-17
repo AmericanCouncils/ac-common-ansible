@@ -1,4 +1,4 @@
-- include: sliding_deploy_pull.yml
+- include_tasks: sliding_deploy_pull.yml
   vars:
     # Passing through: app_dir, name, user, git_url, version, shared_dirs
     copied_dirs: [ "vendor" ]
@@ -7,7 +7,7 @@
   template: src="templates/secure/{{params_template}}"
         dest="{{app_dir}}/deployments/{{name}}/setup/app/config/parameters.yml"
 
-- include: init_symfony_app.yml
+- include_tasks: init_symfony_app.yml
   vars:
     dir: "{{app_dir}}/deployments/{{name}}/setup"
 
@@ -26,5 +26,5 @@
   notify:
     - restart php5-fpm
 
-- include: sliding_deploy_apply.yml
+- include_tasks: sliding_deploy_apply.yml
   # Passing through vars: app_dir, name

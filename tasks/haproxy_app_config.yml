@@ -1,4 +1,4 @@
-- include: install_haproxy.yml
+- include_tasks: install_haproxy.yml
 
 - name: setup ssl cert
   copy: src=../../files/secure/{{pemfile}}

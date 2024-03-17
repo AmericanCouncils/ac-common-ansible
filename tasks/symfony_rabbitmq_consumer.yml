@@ -1,4 +1,4 @@
-- include: supervisorify.yml
+- include_tasks: supervisorify.yml
   vars:
     service: "{{name}}"
     command: "/usr/bin/php5 ./app/console --env={{symfony_env|default('dev')}} rabbitmq:consumer {{consumer}}"
