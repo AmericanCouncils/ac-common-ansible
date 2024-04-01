@@ -1,16 +1,16 @@
-- name: install key for modern nodejs repo
+- name: Install the gpg key for nodejs LTS
   apt_key:
-    keyserver: keyserver.ubuntu.com
-    id: 1655A0AB68576280
-  tags: node_install
+    url: "https://deb.nodesource.com/gpgkey/nodesource.gpg.key"
+    state: present
 
-- name: access modern nodejs repository!!
-  apt_repository: repo="deb https://deb.nodesource.com/node_6.x trusty main"
-  register: nodejs_repo
+- name: Install the nodejs LTS repos
+  apt_repository:
+    repo: "deb https://deb.nodesource.com/node_18.x focal main"
+    state: present
+    update_cache: yes
 
-- name: update apt cache for nodejs repo
-  apt: update_cache=yes
-  when: nodejs_repo.changed
-
-- name: install nodejs
-  apt: pkg=nodejs
+- name: "Install nodejs"
+  apt:
+    update_cache: yes
+    name: nodejs
+    state: present
