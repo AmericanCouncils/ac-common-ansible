@@ -1,7 +1,7 @@
-- include: create_swapfile.yml
+- include_tasks: create_swapfile.yml
 
 - name: install python-keyczar
-  command: pip3 install python-keyczar
+  pip: name=python-keyczar
 
 - name: cd to /vagrant after login
   lineinfile: dest=/home/vagrant/.bashrc

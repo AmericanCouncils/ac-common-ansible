@@ -1,4 +1,4 @@
-- include: install_nginx.yml
+- include_tasks: install_nginx.yml
 
 - name: nginx_app_config {{name}} - place config file
   template: src=../../{{template}}

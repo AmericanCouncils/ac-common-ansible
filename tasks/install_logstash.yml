@@ -1,4 +1,4 @@
-- include: install_openjdk.yml
+- include_tasks: install_openjdk.yml
 
 - name: add logstash apt key
   apt_key: id='D88E42B4' url='http://packages.elasticsearch.org/GPG-KEY-elasticsearch' state=present
@@ -19,7 +19,7 @@
   notify:
     - restart logstash
 
-- include: supervisorify.yml
+- include_tasks: supervisorify.yml
   vars:
     service: logstash
     command: /opt/logstash/bin/logstash -f /etc/logstash/logstash.conf
