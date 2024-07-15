@@ -1,0 +1,56 @@
+# - name: install GPG key for dotdeb PHP repository
+#   apt_key: url='http://www.dotdeb.org/dotdeb.gpg'
+#   when: ansible_lsb.id == "Ubuntu" and ansible_lsb.major_release|int <= 13
+
+# - name: access dotdeb base repository
+#   apt_repository: repo='deb http://packages.dotdeb.org wheezy all'
+#                     update_cache=yes
+#   when: ansible_lsb.id == "Ubuntu" and ansible_lsb.major_release|int <= 13
+
+
+# - name: access dotdeb PHP repository (version 5.5)
+#   apt_repository: repo='deb http://packages.dotdeb.org wheezy-php55 all'
+#                     update_cache=yes
+#   when: ansible_lsb.id == "Ubuntu" and ansible_lsb.major_release|int <= 13
+- name: install PHP packages
+  apt: pkg=php
+  with_items:
+    - php-mysql 
+    - php-curl 
+    - php-mbstring 
+    - php-xml 
+    - php-xmlrpc 
+    - php-intl 
+    - php-zip  
+    - php-dev
+    - libapache2-mod-php
+
+
+    # - php5-cli
+    # - php5-apcu
+    # - php5-memcached
+    # - php5-memcache
+    # - php5-pgsql
+    # - php5-redis
+    # - php5-sqlite
+    # - php5-xmlrpc
+#curl -s http://getcomposer.org/installer | php -- --install-dir=/usr/local/bin
+         #creates=/usr/local/bin/composer.phar
+
+# - name: install composer
+#   shell:  php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+#           php -r "if (hash_file('sha384', 'composer-setup.php') === 'e21205b207c3ff031906575712edab6f13eb0b361f2085f1f1237b7126d785e826a450292b6cfd1d64d92e6563bbde02') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
+#           php composer-setup.php
+#           php -r "unlink('composer-setup.php');"
+#           mv composer.phar /usr/local/bin/composer
+#           composer install --working-dir=/var/www/html/exams
+
+# - name: symlink composer to composer.phar
+#   file: src=/usr/local/bin/composer.phar
+#         dest=/usr/local/bin/composer
+#         state=link
+
+# - name: update php.ini for php8-cli
+#   copy: src=../files/php.ini dest=/etc/php8/cli/php.ini
+
+
