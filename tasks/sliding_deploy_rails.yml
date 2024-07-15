@@ -4,7 +4,7 @@
   notify:
     - reload supervisor
 
-- include: sliding_deploy_pull.yml
+- include_tasks: sliding_deploy_pull.yml
   # Passing through: app_dir, name, user, git_url, version, shared_dirs
 
 - name: sliding_deploy_rails {{name}} - dotenv template
@@ -15,7 +15,7 @@
   command: bundle install --without="development test profile"
            chdir="{{app_dir}}/deployments/{{name}}/setup"
 
-- include: sliding_deploy_apply.yml
+- include_tasks: sliding_deploy_apply.yml
   # Passing through vars: app_dir, name
 
 - name: sliding_deploy_rails {{name}} - gracefully stop resque (supervisor will restart it)

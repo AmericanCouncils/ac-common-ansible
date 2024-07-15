@@ -1,5 +1,6 @@
 - name: set local DNS for {{host}} to {{ip}}
   lineinfile: dest=/etc/hosts_extra create=yes regexp=" {{host}}$" line="{{ip}} {{host}}"
   tags: dns
+  become: yes
   notify:
     - restart dnsmasq

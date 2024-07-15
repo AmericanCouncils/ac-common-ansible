@@ -4,4 +4,4 @@
   vars_prompt:
     confirmation: "You are targeting PRODUCTION! Type 'yes' to proceed"
   tasks:
-    - include: tasks/require_confirmation_to_proceed.yml
+    - include_tasks: tasks/require_confirmation_to_proceed.yml

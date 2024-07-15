@@ -1,7 +1,16 @@
-- name: install nodejs
-  apt: pkg=nodejs
-  tags: node_install
+- name: Install the gpg key for nodejs LTS
+  apt_key:
+    url: "https://deb.nodesource.com/gpgkey/nodesource.gpg.key"
+    state: present
 
-- name: install npm
-  apt: pkg=npm
-  tags: node_install
+- name: Install the nodejs LTS repos
+  apt_repository:
+    repo: "deb https://deb.nodesource.com/node_18.x focal main"
+    state: present
+    update_cache: yes
+
+- name: "Install nodejs"
+  apt:
+    update_cache: yes
+    name: nodejs
+    state: present
