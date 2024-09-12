@@ -2,6 +2,7 @@
   connection: local
   gather_facts: false
   vars_prompt:
+    name: confirm production
     confirmation: "You are targeting PRODUCTION! Type 'yes' to proceed"
   tasks:
     - include_tasks: tasks/require_confirmation_to_proceed.yml

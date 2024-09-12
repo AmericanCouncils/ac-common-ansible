@@ -1,25 +1,47 @@
-- name: access modern nginx repository
-  apt_repository: repo=ppa:chris-lea/nginx-devel
-  register: nginx_repo
+- name: Add NGINX signing key
+  become: yes
+  apt_key:
+    url: https://nginx.org/keys/nginx_signing.key
+    state: present
 
-- name: update apt cache for nginx repo
-  apt: update_cache=yes
-  when: nginx_repo.changed
+- name: Add NGINX repository
+  become: yes
+  apt_repository:
+    repo: "deb http://nginx.org/packages/{{ ansible_distribution | lower }}/ {{ ansible_distribution_release }} nginx"
+    state: present
+    filename: nginx
 
-- name: install nginx stable with third party modules
-  apt: pkg=nginx-extras
-  notify:
-    - restart nginx
+- name: Update APT cache
+  become: yes
+  apt:
+    update_cache: yes
 
-- name: delete default nginx app
-  file: path=/etc/nginx/sites-enabled/default state=absent
-  notify:
-    - restart nginx
+- name: Install specific version of Nginx 
+  apt:
+    name: nginx
+    state: present
+  become: yes
+- name: Install Nginx (1.24)
+  become: yes
+  apt: 
+    name: nginx
+    state: latest
+    update_cache: yes
+    cache_valid_time: 3600
+  tags:
+    - nginx
+    - frontend
+    - deps
 
-- name: delete useless nginx conf.d directory
-  file: path=/etc/nginx/conf.d state=absent
-  notify:
-    - restart nginx
+- name: set nginx under runit supervision
+  shell: |
+    mkdir -p /etc/sv/nginx
+    mkdir -p /etc/sv/nginx/log
+    echo '#!/bin/sh' > /etc/sv/nginx/run
+    echo 'exec /usr/sbin/nginx -g "daemon off;"' >> /etc/sv/nginx/run
+    chmod +x /etc/sv/nginx/run
+    rm /etc/service/nginx
+    ln -s /etc/sv/nginx /etc/service/nginx
 
 - name: create nginx site directories
   file: path=/etc/nginx/sites-{{item}}/ state=directory
@@ -27,7 +49,7 @@
     - enabled
     - available
 
-- name: create nginx log directory (nginx requires it even though it is unused)
+-name: create nginx log directory (nginx requires it even though it is unused)
   file: path=/var/log/nginx state=directory
 
 - name: setup central nginx config
@@ -36,8 +58,5 @@
   notify:
     - restart nginx
 
-- include_tasks: supervisorify.yml
-  vars:
-    service: nginx
-    command: /usr/sbin/nginx
-    start_secs: 0
+
+

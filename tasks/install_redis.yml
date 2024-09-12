@@ -2,14 +2,17 @@
   apt: pkg=redis-server
 
 - name: set up redis.conf {{redis_name|default('default')}}
-  template: src=../templates/redis.conf.j2 dest=/etc/redis/redis-default.conf
+  template: src=../templates/redis.conf.j2 dest=/etc/redis/{{redis_name|default('default')}}.conf
 
 # SWITCH TO RUNIT
-- name: create runit service directories for redis-default
-  file: path=/etc/service/redis-default/supervise state=directory mode=0700 owner=root group=root
 
-- name: set redis under runit control
-  copy: src=../files/redis-default-runit.sh
-        dest=/etc/service/redis-default/run
-        mode=0500
-  when: dockerized
+- name: set redis-default under runit supervision
+  shell: |
+    mkdir -p /etc/sv/redis-{{redis_name|default('default')}}
+    mkdir -p /etc/sv/redis-{{redis_name|default('default')}}/log
+    echo '#!/bin/sh' > /etc/sv/redis-{{redis_name|default('default')}}/run
+    echo 'exec /usr/bin/redis-server /etc/redis/redis-{{redis_name|default('default')}}.conf' >> /etc/sv/{{redis_name|default('default')}}/run
+    chmod +x /etc/sv/redis-{{redis_name|default('default')}}/run
+    rm /etc/service/redis-{{redis_name|default('default')}}
+    ln -s /etc/sv/redis-{{redis_name|default('default')}} /etc/service/
+

@@ -36,6 +36,18 @@
         mode=0500
   when: dockerized
 
+- name: set dnsmasq under runit supervision
+  shell: |
+    mkdir -p /etc/sv/dnsmasq
+    mkdir -p /etc/sv/dnsmasq/log
+    echo '#!/bin/sh' > /etc/sv/dnsmasq/run
+    echo 'exec /usr/sbin/dnsmasq --keep-in-foreground' >> /etc/sv/dnsmasq/run
+    chmod +x /etc/sv/dnsmasq/run
+    rm /etc/service/dnsmasq
+    ln -s /etc/sv/dnsmasq /etc/service/dnsmasq
+
+  
+
 - name: generate locale
   command: sudo locale-gen en_US.UTF-8 creates=/var/lib/locales/supported.d/local
 
@@ -59,10 +71,12 @@
 - name: create lastlog file
   command: touch /var/log/lastlog creates=/var/log/lastlog
 
+
 - name: set shell prompt to show full hostname with production tag
-  lineinfile: dest=item
-              regexp="^export PS1="
-              line='export PS1="\[\033[1;31m\][PROD]\[\033[0m\] \u@\H:\w\$ "'
+  lineinfile:
+    dest: "{{ item }}"
+    regexp: '^export PS1='
+    line: 'export PS1="\[\033[1;31m\][PROD]\[\033[0m\] \u@\H:\w\$ "'
   with_items:
     - "/etc/skel/.bashrc"
     - "/home/{{ ansible_ssh_user }}/.bashrc"
@@ -136,16 +150,13 @@
     - info
     - lsof
     - man-db
-    - mime-support
+    - media-types
     - psmisc
     - time
     - wget
 
 - name: access modern git repository
   apt_repository: repo=ppa:git-core/ppa
-
-- name: install git
-  apt: pkg=git
 
 - name: remove rsyslog
   apt: pkg=rsyslog state=absent
@@ -193,9 +204,6 @@
     - dmesg
     - error
     - messages
-    - mysql
-    - mysql.err
-    - mysql.log
     - redis
     - samba
     - syslog

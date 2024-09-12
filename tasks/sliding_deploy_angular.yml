@@ -37,7 +37,7 @@
   when: gruntfilePath.stat.exists == true
 
 - name: sliding_deploy_angular {{name}} - build dist with gulp
-  command: ./node_modules/gulp/bin/gulp.js build
+  command: ./node_modules/gulp/bin/gulp.js build:apps:prod
            chdir="{{app_dir}}/deployments/{{name}}/setup"
   when: gulpfilePath.stat.exists == true
 

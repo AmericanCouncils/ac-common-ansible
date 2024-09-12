@@ -1,8 +1,9 @@
-- name: sliding_deploy_rails {{name}} - setup supervisor config for unicorn
-  template: src=../templates/unicorn-supervisor-service.conf.j2
-            dest=/etc/supervisor.d/{{name}}-unicorn-supervisor.conf
-  notify:
-    - reload supervisor
+- include_tasks: config_unicorn.yml
+  tags: 
+    - unicorn
+- include_tasks: config_resque.yml
+  tags: 
+    - resque
 
 - include_tasks: sliding_deploy_pull.yml
   # Passing through: app_dir, name, user, git_url, version, shared_dirs
@@ -12,16 +13,16 @@
             dest="{{app_dir}}/deployments/{{name}}/setup/dotenv.production"
 
 - name: sliding_deploy_rails {{name}} - install gems
-  command: bundle install --without="development test profile"
+  command: /home/ubuntu/.rbenv/shims/bundle install --without="development test profile"
            chdir="{{app_dir}}/deployments/{{name}}/setup"
 
 - include_tasks: sliding_deploy_apply.yml
   # Passing through vars: app_dir, name
 
-- name: sliding_deploy_rails {{name}} - gracefully stop resque (supervisor will restart it)
+- name: sliding_deploy_rails {{name}} - gracefully stop resque (runit will restart it)
   command: pkill --signal QUIT -u {{user}} -f 'resque'
   ignore_errors: true
 
-- name: sliding_deploy_rails {{name}} - stop unicorn (supervisor will restart it)
+- name: sliding_deploy_rails {{name}} - stop unicorn (runit will restart it)
   command: pkill --signal QUIT -u {{user}} -f 'unicorn master'
   ignore_errors: true
