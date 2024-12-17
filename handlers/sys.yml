@@ -2,7 +2,9 @@
   command: /usr/sbin/dpkg-reconfigure --frontend noninteractive tzdata
 
 - name: reload firewall
-  command: /etc/systemd/system/ferm reload
+  runit: 
+    name: ferm 
+    state: started
 
 - name: reload syslog-ng
   service: name=syslog-ng state=reloaded
@@ -15,6 +17,11 @@
     name: nginx
     state: started
   # supervisorctl: name=nginx state=restarted
+
+- name: restart dnsmasq
+  runit: 
+    name: dnsmasq 
+    state: started
 
 - name: restart redis
   runit:

@@ -1,6 +1,5 @@
 - include_tasks: sliding_deploy_pull.yml
   vars:
-    # Passing through: name, user, git_url, version
     shared_dirs: []
     copied_dirs: [ "node_modules" ]
 

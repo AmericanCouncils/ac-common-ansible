@@ -1,16 +1,15 @@
 - include_tasks: install_nginx.yml
 
-- name: nginx_app_config {{name}} - place config file
+- name: nginx_app_config {{hammerspace_domain}} - place config file
   template: src=../../{{template}}
-            dest=/etc/nginx/sites-available/{{name}}-nginx
+            dest=/etc/nginx/sites-available/{{hammerspace_domain}}.conf
   tags: nginx_conf
   notify:
     - restart nginx
 
-- name: nginx_app_config {{name}} - symlink nginx config to sites-enabled
-  file: src=/etc/nginx/sites-available/{{name}}-nginx
-        dest=/etc/nginx/sites-enabled/{{name}}-nginx
+- name: nginx_app_config {{hammerspace_domain}} - symlink nginx config to sites-enabled
+  file: src=/etc/nginx/sites-available/{{hammerspace_domain}}.conf
+        dest=/etc/nginx/sites-enabled/{{hammerspace_domain}}.conf
         state=link
   notify:
     - restart nginx
-

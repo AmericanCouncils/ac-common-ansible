@@ -1,12 +1,12 @@
-
 - name: Set up Resque runit service
   become: yes
   shell: |
     mkdir -p /etc/sv/{{ name }}-resque
     mkdir -p /etc/sv/{{ name }}-resque/log
     echo '#!/bin/sh' > /etc/sv/{{ name }}-resque/run
-    echo 'cd {{ app_dir }} || exit 1' >> /etc/sv/{{ name }}-resque/run
-    echo 'exec chpst -u {{ ansible_ssh_user }}:{{ ansible_ssh_user }} /home/ubuntu/.rbenv/shims/bundle exec rake resque:work QUEUE=* >> {{ app_dir }}/log/resque.log 2>&1' >> /etc/sv/{{ name }}-resque/run
+    echo 'cd {{ app_dir }}/{{name}}/ || exit 1' >> /etc/sv/{{ name }}-resque/run
+    echo 'export HOME=/home/ubuntu' >> /etc/sv/{{ name }}-resque/run
+    echo 'exec chpst -u {{ ansible_ssh_user }}:{{ ansible_ssh_user }} /home/ubuntu/.rbenv/shims/bundle exec rake resque:work QUEUE=* RAILS_ENV=production >> /var/hammerspace/hammerspace-server/log/resque.log 2>&1' >> /etc/sv/{{ name }}-resque/run
     chmod +x /etc/sv/{{ name }}-resque/run
     rm /etc/service/{{ name }}-resque
     ln -s /etc/sv/{{ name }}-resque /etc/service/{{ name }}-resque

@@ -10,9 +10,19 @@
   shell: |
     mkdir -p /etc/sv/redis-{{redis_name|default('default')}}
     mkdir -p /etc/sv/redis-{{redis_name|default('default')}}/log
+
     echo '#!/bin/sh' > /etc/sv/redis-{{redis_name|default('default')}}/run
     echo 'exec /usr/bin/redis-server /etc/redis/redis-{{redis_name|default('default')}}.conf' >> /etc/sv/{{redis_name|default('default')}}/run
     chmod +x /etc/sv/redis-{{redis_name|default('default')}}/run
     rm /etc/service/redis-{{redis_name|default('default')}}
     ln -s /etc/sv/redis-{{redis_name|default('default')}} /etc/service/
 
+- name: Ensure resque log directory exists
+  become: yes
+  file:
+    path: /var/log/redis-{{redis_name|default('default')}}
+    state: directory
+    owner: "{{ ansible_ssh_user }}"
+    group: "{{ ansible_ssh_user }}"
+    mode: '0755'
+  tags: resque

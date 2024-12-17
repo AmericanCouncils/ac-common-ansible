@@ -20,9 +20,27 @@
   # Passing through vars: app_dir, name
 
 - name: sliding_deploy_rails {{name}} - gracefully stop resque (runit will restart it)
-  command: pkill --signal QUIT -u {{user}} -f 'resque'
+  command: pkill --signal QUIT -u {{ansible_ssh_user}} -f 'resque'
   ignore_errors: true
 
 - name: sliding_deploy_rails {{name}} - stop unicorn (runit will restart it)
-  command: pkill --signal QUIT -u {{user}} -f 'unicorn master'
+  command: pkill --signal QUIT -u {{ansible_ssh_user}} -f 'unicorn master'
   ignore_errors: true
+
+- name: setup temp directory
+  become: yes
+  file:
+    path: /{{ app_dir}}/{{ name }}/tmp
+    state: directory
+    owner: "{{ ansible_ssh_user }}"
+    group: "{{ ansible_ssh_user }}"
+    mode: '0777'
+
+- name: setup unicorn sockets directory
+  become: yes
+  file:
+    path: /{{ app_dir}}/{{ name }}/tmp/sockets
+    state: directory
+    owner: "{{ ansible_ssh_user }}"
+    group: "{{ ansible_ssh_user }}"
+    mode: '0777'

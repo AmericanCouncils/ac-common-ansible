@@ -1,3 +1,6 @@
+# Commented out without saying why.
+
+# We should not need if the directory and all of the files are in hammerspace-server 
 # - name: Create config dir
 #   become: yes
 #   shell: |
@@ -9,11 +12,12 @@
     mkdir -p /etc/sv/{{ name }}-unicorn
     mkdir -p /etc/sv/{{ name }}-unicorn/log
     echo '#!/bin/sh' > /etc/sv/{{ name }}-unicorn/run
-    echo 'cd {{ app_dir }} || exit 1' >> /etc/sv/{{ name }}-unicorn/run
+    echo 'cd {{ app_dir }}/{{name}}/ || exit 1' >> /etc/sv/{{ name }}-unicorn/run
     echo 'export HOME=/home/ubuntu' >> /etc/sv/{{ name }}-unicorn/run
     echo 'exec 2>&1' >> /etc/sv/{{ name }}-unicorn/run
+    echo 'exec chpst -u {{ ansible_ssh_user }}:{{ ansible_ssh_user }} /home/ubuntu/.rbenv/shims/bundle exec unicorn  -E production -c {{ app_dir }}/{{name}}/config/unicorn.rb' >> /etc/sv/{{ name }}-unicorn/run
 
-    echo 'exec chpst -u {{ ansible_ssh_user }}:{{ ansible_ssh_user }} /home/ubuntu/.rbenv/shims/bundle exec unicorn  -E production -c {{ app_dir }}/config/unicorn.rb' >> /etc/sv/{{ name }}-unicorn/run
+
     chmod +x /etc/sv/{{ name }}-unicorn/run
     rm /etc/service/{{ name }}-unicorn
     ln -s /etc/sv/{{ name }}-unicorn /etc/service/{{ name }}-unicorn
