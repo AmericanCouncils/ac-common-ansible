@@ -5,13 +5,23 @@
     mkdir -p /etc/sv/{{ name }}-resque/log
     echo '#!/bin/sh' > /etc/sv/{{ name }}-resque/run
     echo 'cd {{ app_dir }}/{{name}}/ || exit 1' >> /etc/sv/{{ name }}-resque/run
-    echo 'export HOME=/home/ubuntu' >> /etc/sv/{{ name }}-resque/run
+    echo 'export HOME=/home/{{ ansible_ssh_user }}' >> /etc/sv/{{ name }}-resque/run
     echo 'exec chpst -u {{ ansible_ssh_user }}:{{ ansible_ssh_user }} /home/ubuntu/.rbenv/shims/bundle exec rake resque:work QUEUE=* RAILS_ENV=production >> /var/hammerspace/hammerspace-server/log/resque.log 2>&1' >> /etc/sv/{{ name }}-resque/run
     chmod +x /etc/sv/{{ name }}-resque/run
     rm /etc/service/{{ name }}-resque
     ln -s /etc/sv/{{ name }}-resque /etc/service/{{ name }}-resque
   tags: resque
 
+- name: Ensure resque log directory exists
+  become: yes
+  file:
+    path: /var/log/{{ name }}-resque
+    state: directory
+    owner: "{{ ansible_ssh_user }}"
+    group: "{{ ansible_ssh_user }}"
+    mode: '0755'
+  tags: resque
+  
 - name: Set up resque log runit service
   become: yes
   copy:
@@ -24,20 +34,10 @@
     mode: '0755'
   tags: resque
 
-- name: Ensure resque log directory exists
-  become: yes
-  file:
-    path: /var/log/{{ name }}-resque
-    state: directory
-    owner: "{{ ansible_ssh_user }}"
-    group: "{{ ansible_ssh_user }}"
-    mode: '0755'
-  tags: resque
-
-- name: Link resque service to runit
-  become: yes
-  file:
-    src: /etc/sv/{{ name }}-resque
-    dest: /etc/service/{{ name }}-resque
-    state: link
-  tags: resque
+# - name: Link resque service to runit
+#   become: yes
+#   file:
+#     src: /etc/sv/{{ name }}-resque
+#     dest: /etc/service/{{ name }}-resque
+#     state: link
+#   tags: resque
