@@ -30,11 +30,6 @@
   file: path=/etc/service/dnsmasq/supervise state=directory mode=0700 owner=root group=root
   when: dockerized
 
-- name: set dnsmasq under runit control
-  copy: src=../files/dnsmasq-runit.sh
-        dest=/etc/service/dnsmasq/run
-        mode=0500
-  when: dockerized
 
 - name: set dnsmasq under runit supervision
   shell: |
@@ -43,9 +38,7 @@
     echo '#!/bin/sh' > /etc/sv/dnsmasq/run
     echo 'exec /usr/sbin/dnsmasq --keep-in-foreground' >> /etc/sv/dnsmasq/run
     chmod +x /etc/sv/dnsmasq/run
-    rm /etc/service/dnsmasq
     ln -s /etc/sv/dnsmasq /etc/service/dnsmasq
-
 
 
 - name: generate locale
