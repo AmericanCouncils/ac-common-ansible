@@ -9,15 +9,42 @@
     mode=0444
   become: yes
 
-# SWITCH TO RUNIT
-- name: create runit service directories for mysql
-  file: path=/etc/service/mysql/supervise state=directory mode=0700 owner=root group=root
+- name: Set up Mysql runit service
+  become: yes
+  shell: |
+    mkdir -p /etc/sv/mysql
+    mkdir -p /etc/sv/mysql/log
+    echo '#!/bin/sh' > /etc/sv/mysql/run
+    echo 'cd / || exit 1' >> /etc/sv/mysql/run
+    echo 'umask 077' >> /etc/sv/mysql/run
+    echo 'MYSQLADMIN="/usr/bin/mysqladmin"' >> /etc/sv/mysql/run
+    echo 'trap "$MYSQLADMIN shutdown" 0' >> /etc/sv/mysql/run
+    echo 'trap "exit 2" 1 2 3 15' >> /etc/sv/mysql/run
+    echo 'umask 077' >> /etc/sv/mysql/run
+    echo 'exec  /usr/bin/mysqld_safe --defaults-file=/etc/mysql/my.cnf --general_log=1 --general_log_file=/var/log/mysql/queries.log & wait' >> /etc/sv/mysql/run
+    chmod +x /etc/sv/mysql/run
+    rm /etc/service/mysql
+    ln -s /etc/sv/mysql /etc/service/mysql
 
-- name: set mysql under runit control
-  copy: src=../files/mysql-runit.sh
-        dest=/etc/service/mysql/run
-        mode=0500
-  when: dockerized
+- name: Ensure Mysql log directory exists
+  become: yes
+  file:
+    path: /var/log/mysql
+    state: directory
+    owner: "{{ ansible_ssh_user }}"
+    group: "{{ ansible_ssh_user }}"
+    mode: '0755'
+
+- name: Set up Mysql log runit service
+  become: yes
+  copy:
+    content: |
+      #!/bin/sh
+      exec svlogd -tt /var/log/mysql
+    dest: /etc/sv/mysql/log/run
+    owner: root
+    group: root
+    mode: '0755'
 
 - name: install mysql python library
   pip: name=mysqlclient

@@ -26,11 +26,6 @@
   notify:
     - restart dnsmasq
 
-- name: create runit service directories for dnsmasq
-  file: path=/etc/service/dnsmasq/supervise state=directory mode=0700 owner=root group=root
-  when: dockerized
-
-
 - name: set dnsmasq under runit supervision
   shell: |
     mkdir -p /etc/sv/dnsmasq
@@ -38,8 +33,13 @@
     echo '#!/bin/sh' > /etc/sv/dnsmasq/run
     echo 'exec /usr/sbin/dnsmasq --keep-in-foreground' >> /etc/sv/dnsmasq/run
     chmod +x /etc/sv/dnsmasq/run
-    ln -s /etc/sv/dnsmasq /etc/service/dnsmasq
 
+- name: Link DNSMASQ service to runit
+  become: yes
+  file:
+    src: /etc/sv/dnsmasq
+    dest: /etc/service/dnsmasq
+    state: link
 
 - name: generate locale
   command: sudo locale-gen en_US.UTF-8 creates=/var/lib/locales/supported.d/local
