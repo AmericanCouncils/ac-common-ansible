@@ -1,0 +1,4 @@
+#!/bin/sh
+
+echo '#!/bin/sh' > /etc/sv/redis-{{ redis_name | default('default') }}/run
+echo 'exec /usr/bin/redis-server /etc/redis/{{ redis_name | default('default') }}.conf' >> /etc/sv/redis-{{ redis_name | default('default') }}/run
