@@ -1,14 +1,20 @@
 - name: sliding_deploy_apply {{name}} - examine active deployment
   stat: path="{{app_dir}}/deployments/{{name}}/setup" follow=yes
   register: deploy_stat
+  tags:
+  - hammerspace
 
 - name: sliding_deploy_apply {{name}} - examine temporary symlink
   stat: path="{{app_dir}}/deployments/{{name}}/setup" follow=no
   register: symlink_stat
+  tags:
+  - hammerspace
 
 - name: sliding_deploy_apply {{name}} - remove temporary symlink
   file: path="{{app_dir}}/deployments/{{name}}/setup"
         state=absent
+  tags:
+  - hammerspace
 
 - name: sliding_deploy_apply {{name}} - set ownership of the repository again
   file: path="{{symlink_stat.stat.lnk_source}}"
@@ -16,13 +22,19 @@
         recurse=yes
         owner="{{deploy_stat.stat.uid}}"
         group="{{deploy_stat.stat.gid}}"
+  tags:
+  - hammerspace
 
 # TODO: Notify stuff (can we accept as an argument the handlers to notify?)
 - name: sliding_deploy_apply {{name}} - update deployment symlink
   file: src="{{symlink_stat.stat.lnk_source}}"
         dest="{{app_dir}}/{{name}}"
         state=link
+  tags:
+  - hammerspace
 
 # Shell command from http://www.tequilafish.com/2011/06/26/unix-delete-all-but-n-most-recent-files-in-a-directory/
 - name: sliding_deploy_apply {{name}} - delete old deployments
   shell: find {{app_dir}}/deployments/{{name}}/ -maxdepth 1 -type d -name 'd-*' -print0 | xargs -r0 ls -dr | tail -n +6 | tr '\n' '\0' | xargs -r0 rm -rf
+  tags:
+  - hammerspace

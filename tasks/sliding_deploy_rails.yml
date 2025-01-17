@@ -1,31 +1,67 @@
-- include_tasks: config_unicorn.yml
-  tags: 
-    - unicorn
-- include_tasks: config_resque.yml
-  tags: 
-    - resque
 
-- include_tasks: sliding_deploy_pull.yml
-  # Passing through: app_dir, name, user, git_url, version, shared_dirs
+- name: sliding deploy pull
+  include_tasks: sliding_deploy_pull.yml
+  tags:
+  - hammerspace-server
 
 - name: sliding_deploy_rails {{name}} - dotenv template
   template: src="templates/secure/{{dotenv_template}}"
             dest="{{app_dir}}/deployments/{{name}}/setup/dotenv.production"
+  tags:
+  - hammerspace-server
 
 - name: sliding_deploy_rails {{name}} - install gems
   command: /home/ubuntu/.rbenv/shims/bundle install --without="development test profile"
            chdir="{{app_dir}}/deployments/{{name}}/setup"
+  tags:
+  - hammerspace-server
 
-- include_tasks: sliding_deploy_apply.yml
-  # Passing through vars: app_dir, name
+- name: sliding deploy apply
+  include_tasks: sliding_deploy_apply.yml
+  tags:
+  - hammerspace-server
 
 - name: sliding_deploy_rails {{name}} - gracefully stop resque (runit will restart it)
   command: pkill --signal QUIT -u {{ansible_ssh_user}} -f 'resque'
-  ignore_errors: true
+  #ignore_errors: true
+  tags:
+  - hammerspace-server
 
 - name: sliding_deploy_rails {{name}} - stop unicorn (runit will restart it)
   command: pkill --signal QUIT -u {{ansible_ssh_user}} -f 'unicorn master'
-  ignore_errors: true
+  #ignore_errors: true
+  tags:
+  - hammerspace-server
+
+- name: Ensure gems directory exists
+  vars:
+    gems_dir: /home/ubuntu/.rbenv/versions/2.4.10/lib/ruby/gems/2.4.0/bundler/gems
+  file:
+    path: "{{ gems_dir }}"
+    state: directory
+    owner: ubuntu
+    group: ubuntu
+    mode: '0755'
+  tags:
+  - hammerspace-server
+  
+- name: Recursively find all directories in the gems directory
+  vars:
+    gems_dir: /home/ubuntu/.rbenv/versions/2.4.10/lib/ruby/gems/2.4.0/bundler/gems
+  find:
+    paths: "{{ gems_dir }}"
+    file_type: directory
+  register: git_gem_directories
+  tags:
+  - hammerspace-server
+  
+- name: Add each gem directory to Git safe.directory
+  command: git config --global --add safe.directory "{{ item.path }}"
+  with_items: "{{ git_gem_directories.files }}"
+  become: yes
+  become_user: "{{ ansible_ssh_user }}"
+  tags:
+  - hammerspace-server
 
 - name: setup temp directory
   become: yes
@@ -35,6 +71,8 @@
     owner: "{{ ansible_ssh_user }}"
     group: "{{ ansible_ssh_user }}"
     mode: '0777'
+  tags:
+  - hammerspace-server
 
 - name: setup unicorn sockets directory
   become: yes
@@ -44,3 +82,12 @@
     owner: "{{ ansible_ssh_user }}"
     group: "{{ ansible_ssh_user }}"
     mode: '0777'
+  tags:
+  - hammerspace-server
+
+- name: configure gems with runit
+  include_tasks: config_unicorn.yml
+  include_tasks: config_resque.yml
+  tags:
+  - hammerspace-server
+

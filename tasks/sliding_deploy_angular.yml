@@ -1,45 +1,72 @@
-- include_tasks: sliding_deploy_pull.yml
+- name: Sliding deploy pull
+  include_tasks: sliding_deploy_pull.yml
   vars:
     shared_dirs: []
     copied_dirs: [ "node_modules" ]
+  tags:
+  - hammerspace-ui
 
-- stat: path="{{app_dir}}/deployments/{{name}}/setup/gruntfile.coffee"
+- name: Add grunt file
+  stat: path="{{app_dir}}/deployments/{{name}}/setup/gruntfile.coffee"
   register: gruntfilePath
+  tags:
+  - hammerspace-ui
 
-- stat: path="{{app_dir}}/deployments/{{name}}/setup/gulpfile.coffee"
+- name: Add gulp file
+  stat: path="{{app_dir}}/deployments/{{name}}/setup/gulpfile.coffee"
   register: gulpfilePath
+  tags:
+  - hammerspace-ui
 
 - name: sliding_deploy_angular {{name}} - copy settings.coffee to scripts folder
   copy: src="files/{{settings_file}}"
         dest="{{app_dir}}/deployments/{{name}}/setup/{{settings_dest|default('app/scripts/settings.coffee')}}"
+  tags:
+  - hammerspace-ui
 
 - name: sliding_deploy_angular {{name}} - remove old npm dependencies
   command: npm prune --unsafe-perm
            chdir="{{app_dir}}/deployments/{{name}}/setup"
+  tags:
+  - hammerspace-ui
 
 - name: sliding_deploy_angular {{name}} - install npm dependencies
   command: npm install --unsafe-perm
            chdir="{{app_dir}}/deployments/{{name}}/setup"
   ignore_errors: yes
+  tags:
+  - hammerspace-ui
 
 - name: sliding_deploy_angular {{name}} - install npm dependencies 2nd attempt
   command: npm install --unsafe-perm
            chdir="{{app_dir}}/deployments/{{name}}/setup"
+  tags:
+  - hammerspace-ui
 
 - name: sliding_deploy_angular {{name}} - install bower dependencies
   command: ./node_modules/bower/bin/bower install --dev --allow-root
            chdir="{{app_dir}}/deployments/{{name}}/setup"
+  tags:
+  - hammerspace-ui
 
 - name: sliding_deploy_angular {{name}} - build dist with grunt
   command: grunt build
            chdir="{{app_dir}}/deployments/{{name}}/setup"
   when: gruntfilePath.stat.exists == true
+  tags:
+  - hammerspace-ui
 
 - name: sliding_deploy_angular {{name}} - build dist with gulp
   command: ./node_modules/gulp/bin/gulp.js build:apps:prod
            chdir="{{app_dir}}/deployments/{{name}}/setup"
   when: gulpfilePath.stat.exists == true
+  tags:
+  - hammerspace-ui
 
 # TODO: Run some kind of setup script provided by the app, if it's present
 
-- include_tasks: sliding_deploy_apply.yml
+- name: Sliding deploy sliding_deploy_apply
+  include_tasks: sliding_deploy_apply.yml
+  tags:
+  - hammerspace-ui
+
