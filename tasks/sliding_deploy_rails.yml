@@ -74,6 +74,15 @@
   tags:
   - hammerspace-server
 
+- name: create symlink for charts 
+  become: yes 
+  file:
+    src: /mnt/mediamount/actesting/charts
+    dest: /var/hammerspace/hammerspace-server/public/charts
+    state: link
+
+  tags:
+  - hammerspace-server
 - name: setup unicorn sockets directory
   become: yes
   file:
